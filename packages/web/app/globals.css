@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+@theme {
+  /* ── Background & surfaces ── */
+  --color-background: #0e0f12;
+  --color-foreground: #f2f3f5;
+  --color-muted: #16181d;
+  --color-muted-foreground: #aeb4bf;
+  --color-border: #2a2e37;
+  --color-input: #2a2e37;
+
+  /* ── Focus ring ── */
+  --color-ring: #ffb494;
+
+  /* ── Primary (orange accent) ── */
+  --color-primary: #e46432;
+  --color-primary-foreground: #ffffff;
+
+  /* ── Destructive ── */
+  --color-destructive: #f87171;
+  --color-destructive-foreground: #0e0f12;
+
+  /* ── Card (slightly lifted surface) ── */
+  --color-card: #16181d;
+  --color-card-foreground: #f2f3f5;
+
+  /* ── Radii ── */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.625rem;
+
+  /* ── Font families (resolved from CSS vars set by next/font on <html>) ── */
+  --font-sans: var(--font-dm-sans), 'DM Sans', sans-serif;
+  --font-mono: var(--font-jetbrains-mono), 'JetBrains Mono', monospace;
+  --font-display: var(--font-bebas-neue), 'Bebas Neue', sans-serif;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  font-weight: 400;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}

@@ -1,0 +1,67 @@
+*.zip
+*.gz
+*errorlog*
+wiredhowse-magic-link.code-workspace
+PROJECT_BRIEF___wiredhowse-magic-link.md
+/spec
+Claude.md
+CLAUDE.md
+
+# Dependencies
+node_modules/
+install.php
+
+# Environment files (NEVER commit these)
+.env
+.env.config
+.env.local
+.env.*.local
+.local.env
+local.env
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build output
+dist/
+build/
+.next/
+packages/snippet/dist/
+
+# TypeScript
+*.tsbuildinfo
+
+# Runtime
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Cache
+.npm/
+.cache/
+.turbo/
+
+# Generator-specific scratch
+tmp/
+scratch/
+

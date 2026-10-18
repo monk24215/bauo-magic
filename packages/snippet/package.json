@@ -1,0 +1,19 @@
+{
+  "name": "@wiredhowse/snippet",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "tsx build.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "biome check src/"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.0",
+    "esbuild": "^0.24.2",
+    "happy-dom": "^15.11.7",
+    "tsx": "^4.19.2",
+    "vitest": "^2.1.8"
+  }
+}
