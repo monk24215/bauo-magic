@@ -18,6 +18,7 @@
  *     or wait for the session to expire naturally.
  */
 
+import { Modal } from '@/components/ui/modal';
 import { MeApiError, meApi } from '@/lib/me-api';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -120,46 +121,53 @@ function ArchiveModal({ onConfirm, onClose, busy }: ArchiveModalProps) {
   const required = 'DELETE MY DATA';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-background border rounded-lg shadow-lg w-full max-w-md p-6 space-y-4">
-        <h2 className="text-xl font-semibold text-destructive">Archive your data</h2>
-        <p className="text-sm text-muted-foreground">
-          This will permanently delete your account and all sessions. An anonymised summary is
-          retained for security purposes only.{' '}
-          <strong>This cannot be undone.</strong>
-        </p>
-        <p className="text-sm">
-          Type <code className="bg-muted px-1 rounded">{required}</code> to confirm:
-        </p>
-        <input
-          type="text"
-          value={typed}
-          onChange={(e) => setTyped(e.target.value)}
-          placeholder={required}
-          className="w-full border rounded px-3 py-2 text-sm font-mono"
+    <Modal
+      labelledBy="archive-dialog-title"
+      onClose={() => {
+        if (!busy) onClose();
+      }}
+      className="max-w-md bg-background"
+    >
+      <h2 id="archive-dialog-title" className="text-xl font-semibold text-destructive">
+        Archive your data
+      </h2>
+      <p className="text-sm text-muted-foreground">
+        This will permanently delete your account and all sessions. An anonymised summary is
+        retained for security purposes only. <strong>This cannot be undone.</strong>
+      </p>
+      <label htmlFor="archive-confirm" className="block text-sm">
+        Type <code className="bg-muted px-1 rounded">{required}</code> to confirm:
+      </label>
+      <input
+        id="archive-confirm"
+        autoComplete="off"
+        spellCheck={false}
+        type="text"
+        value={typed}
+        onChange={(e) => setTyped(e.target.value)}
+        placeholder={required}
+        className="w-full border rounded px-3 py-2 text-sm font-mono"
+        disabled={busy}
+      />
+      <div className="flex gap-3 justify-end">
+        <button
+          type="button"
+          onClick={onClose}
           disabled={busy}
-          autoFocus
-        />
-        <div className="flex gap-3 justify-end">
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={busy}
-            className="px-4 py-2 text-sm rounded-md border hover:bg-muted transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            onClick={onConfirm}
-            disabled={typed !== required || busy}
-            className="px-4 py-2 text-sm rounded-md bg-destructive text-destructive-foreground hover:bg-destructive/90 disabled:opacity-50 transition-colors"
-          >
-            {busy ? 'Archiving…' : 'Archive my data'}
-          </button>
-        </div>
+          className="px-4 py-2 text-sm rounded-md border hover:bg-muted transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          onClick={onConfirm}
+          disabled={typed !== required || busy}
+          className="px-4 py-2 text-sm rounded-md bg-destructive text-destructive-foreground hover:bg-destructive/90 disabled:opacity-50 transition-colors"
+        >
+          {busy ? 'Archiving…' : 'Archive my data'}
+        </button>
       </div>
-    </div>
+    </Modal>
   );
 }
 
@@ -378,6 +386,7 @@ export default function MePage() {
                   value={nameInput}
                   onChange={(e) => setNameInput(e.target.value)}
                   maxLength={100}
+                  aria-label="Display name"
                   className="border rounded px-2 py-1 text-sm flex-1"
                   disabled={savingName}
                 />
@@ -504,8 +513,8 @@ export default function MePage() {
             <div>
               <p className="text-sm font-medium text-destructive">Close and archive my data</p>
               <p className="text-xs text-muted-foreground">
-                Permanently deletes your account. An anonymised record is retained for 24 months
-                for security purposes.
+                Permanently deletes your account. An anonymised record is retained for 24 months for
+                security purposes.
               </p>
             </div>
             <button
