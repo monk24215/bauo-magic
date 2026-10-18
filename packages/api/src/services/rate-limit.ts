@@ -76,7 +76,8 @@ export async function checkRateLimit(
   return {
     allowed: allowed === 1,
     current,
-    limit: lim,
+    // ARGV values come back from Redis as strings.
+    limit: Number(lim),
     resetAt: Math.floor(Date.now() / 1000) + windowSec,
   };
 }
