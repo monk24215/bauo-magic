@@ -138,7 +138,7 @@ declare global {
      *
      * Before the script loads, use the async-queue pattern:
      *   window.wiredhowseAuth = window.wiredhowseAuth || { q: [] };
-     *   window.wiredhowseAuth.q.push(['on', 'session', (s) => console.log(s)]);
+     *   window.wiredhowseAuth.q.push(['on', 'session', (s) => handleSession(s)]);
      */
     wiredhowseAuth: WiredhowseAuth;
   }
