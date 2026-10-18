@@ -8,7 +8,7 @@ const SNIPPET_ALLOWED_HEADERS = 'Content-Type, Authorization, X-Site-Key';
 // the snippet API directly (same-origin fetch, but browsers still send Origin
 // on POST). Requests from this origin are always trusted; the site key is the
 // authenticator for per-site scoping.
-const OWN_ORIGIN = new URL(process.env['SITE_URL'] ?? 'https://magic-link.wiredhowse.app').origin;
+const OWN_ORIGIN = new URL(process.env.SITE_URL ?? 'https://magic-link.wiredhowse.app').origin;
 
 // Extracts just the origin (scheme + host + port) from a stored URL string.
 // Stored entries may have been saved with paths before normalization was enforced.
@@ -45,7 +45,7 @@ export function applySnippetCors(
   // entries saved before write-time normalization was enforced (e.g., URLs
   // with paths like https://example.com/page that should match the browser's
   // Origin: https://example.com).
-  if (!allowedOrigins.some(stored => extractOrigin(stored) === origin)) {
+  if (!allowedOrigins.some((stored) => extractOrigin(stored) === origin)) {
     void reply.code(403).send({
       error: { code: ErrorCode.ORIGIN_NOT_ALLOWED, message: 'Origin not in allowed list' },
     });

@@ -85,7 +85,6 @@ vi.mock('../../src/services/email', () => ({
 // Deferred imports
 // ---------------------------------------------------------------------------
 
-import Fastify, { type FastifyInstance } from 'fastify';
 import {
   emailVerifications,
   oauthState,
@@ -95,6 +94,7 @@ import {
   sites,
 } from '@wiredhowse/db';
 import { eq, isNull } from 'drizzle-orm';
+import Fastify, { type FastifyInstance } from 'fastify';
 import { runMigrations } from '../../../db/src/migrate';
 import { registerGlobalErrorHandler } from '../../src/errors';
 import { hashToken } from '../../src/lib/crypto';
@@ -225,7 +225,9 @@ describe('Flow A: Signup → verify-email → login → logout', () => {
 
     expect(res.statusCode).toBe(201);
     expect(capturedVerifyUrls).toHaveLength(1);
-    expect(capturedVerifyUrls[0]).toContain('https://magic-link.wiredhowse.app/verify?token=wh_ev_');
+    expect(capturedVerifyUrls[0]).toContain(
+      'https://magic-link.wiredhowse.app/verify?token=wh_ev_',
+    );
   });
 
   it('login before verification returns 403 EMAIL_NOT_VERIFIED', async () => {
@@ -365,7 +367,9 @@ describe('Flow A: Signup → verify-email → login → logout', () => {
     // Set-Cookie must clear both cookies (Max-Age=0)
     const clearCookies = logoutRes.headers['set-cookie'];
     const clearArr = Array.isArray(clearCookies) ? clearCookies : [String(clearCookies)];
-    expect(clearArr.some((c) => c.startsWith('wh_owner_session=') && c.includes('Max-Age=0'))).toBe(true);
+    expect(clearArr.some((c) => c.startsWith('wh_owner_session=') && c.includes('Max-Age=0'))).toBe(
+      true,
+    );
     expect(clearArr.some((c) => c.startsWith('wh_csrf=') && c.includes('Max-Age=0'))).toBe(true);
   });
 });
@@ -554,14 +558,23 @@ describe('Flow C: Google OAuth callback', () => {
     };
 
     const spy = vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
-      const url = typeof input === 'string' ? input : input instanceof URL ? input.href : (input as Request).url;
+      const url =
+        typeof input === 'string'
+          ? input
+          : input instanceof URL
+            ? input.href
+            : (input as Request).url;
 
       if (url.includes('oauth2.googleapis.com/token')) {
         if (!tokenOk) {
           return new Response('{"error":"invalid_grant"}', { status: 400 });
         }
         return new Response(
-          JSON.stringify({ access_token: 'mock-access-token', token_type: 'Bearer', scope: 'openid email profile' }),
+          JSON.stringify({
+            access_token: 'mock-access-token',
+            token_type: 'Bearer',
+            scope: 'openid email profile',
+          }),
           { status: 200, headers: { 'content-type': 'application/json' } },
         );
       }

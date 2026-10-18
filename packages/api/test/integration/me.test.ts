@@ -50,13 +50,13 @@ import Fastify, { type FastifyInstance } from 'fastify';
 
 import {
   archivedEndUsers,
+  emailVerifications,
   endUsers,
   handoffTokens,
   loginHistory,
   magicLinks,
   oauthState,
   passwordResets,
-  emailVerifications,
   sessions,
   siteOwnerSessions,
   siteOwners,
@@ -114,7 +114,10 @@ async function seedEndUserWithSession(opts: { email?: string } = {}): Promise<Se
     .values({
       siteOwnerId: owner.id,
       domain: `test-${suffix}.example.com`,
-      siteKey: `pk_${suffix.replace(/[^A-Za-z0-9_-]/g, '').padEnd(22, 'a').slice(0, 22)}`,
+      siteKey: `pk_${suffix
+        .replace(/[^A-Za-z0-9_-]/g, '')
+        .padEnd(22, 'a')
+        .slice(0, 22)}`,
       state: 'live',
       verificationToken: `vt_${suffix}`,
       allowedOrigins: ['https://test.example.com'],
@@ -357,7 +360,7 @@ describe('PATCH /v1/me', () => {
 // ---------------------------------------------------------------------------
 
 describe('GET /v1/me/sessions', () => {
-  it('returns only this user\'s active sessions', async () => {
+  it("returns only this user's active sessions", async () => {
     const userA = await seedEndUserWithSession();
     const userB = await seedEndUserWithSession();
 
@@ -574,7 +577,10 @@ describe('POST /v1/me/close-and-archive', () => {
     expect(sessRows).toHaveLength(0);
 
     // Login history cascaded
-    const histRows = await db.select().from(loginHistory).where(eq(loginHistory.endUserId, endUserId));
+    const histRows = await db
+      .select()
+      .from(loginHistory)
+      .where(eq(loginHistory.endUserId, endUserId));
     expect(histRows).toHaveLength(0);
   });
 
@@ -636,7 +642,7 @@ describe('POST /v1/me/close-and-archive', () => {
       .where(eq(archivedEndUsers.originalUserId, endUserId));
 
     // Both conditions must be true for a successful atomic operation
-    expect(euRows).toHaveLength(0);    // user deleted
+    expect(euRows).toHaveLength(0); // user deleted
     expect(archiveRows).toHaveLength(1); // archive created
   });
 

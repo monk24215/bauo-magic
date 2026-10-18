@@ -28,11 +28,7 @@ const DEFAULT_OPTS: IframeOptions = {
  * Fires a synthetic MessageEvent on window.
  * happy-dom lets `source` be provided via the init dict.
  */
-function fireMessage(
-  data: unknown,
-  origin: string,
-  source?: EventTarget | null,
-): void {
+function fireMessage(data: unknown, origin: string, source?: EventTarget | null): void {
   const event = new MessageEvent('message', {
     data,
     origin,
@@ -229,9 +225,9 @@ describe('showAuthIframe', () => {
 
       expect(postSpy).toHaveBeenCalledOnce();
       const [msgArg, targetOrigin] = postSpy.mock.calls[0] as [Record<string, unknown>, string];
-      expect(msgArg['type']).toBe('wh:options');
-      expect(msgArg['message']).toBe('Hello from site owner');
-      expect(msgArg['redirectTo']).toBe('https://customer-site.com/dashboard');
+      expect(msgArg.type).toBe('wh:options');
+      expect(msgArg.message).toBe('Hello from site owner');
+      expect(msgArg.redirectTo).toBe('https://customer-site.com/dashboard');
       expect(targetOrigin).toBe(new URL(API_BASE).origin);
 
       // Cleanup.
@@ -350,8 +346,17 @@ describe('showAuthIframe', () => {
   // -------------------------------------------------------------------------
 
   describe('backdrop click', () => {
+    const DISMISSIBLE_OPTS = { ...DEFAULT_OPTS, dismissible: true };
+
+    it('ignores backdrop clicks by default (hard gate)', () => {
+      void showAuthIframe(DEFAULT_OPTS);
+      getBackdrop()!.click();
+
+      expect(getWrapper()).not.toBeNull();
+    });
+
     it('resolves the promise when the backdrop is clicked', async () => {
-      const promise = showAuthIframe(DEFAULT_OPTS);
+      const promise = showAuthIframe(DISMISSIBLE_OPTS);
       const backdrop = getBackdrop()!;
 
       backdrop.click();
@@ -360,7 +365,7 @@ describe('showAuthIframe', () => {
     });
 
     it('removes the wrapper after backdrop click', async () => {
-      const promise = showAuthIframe(DEFAULT_OPTS);
+      const promise = showAuthIframe(DISMISSIBLE_OPTS);
       getBackdrop()!.click();
       await promise;
 
@@ -369,7 +374,7 @@ describe('showAuthIframe', () => {
 
     it('does not double-resolve if backdrop is clicked twice', async () => {
       // The `settled` guard should prevent double resolution.
-      const promise = showAuthIframe(DEFAULT_OPTS);
+      const promise = showAuthIframe(DISMISSIBLE_OPTS);
       const backdrop = getBackdrop()!;
 
       backdrop.click();
@@ -387,7 +392,7 @@ describe('showAuthIframe', () => {
     it.each(['center', 'top', 'bottom'] as const)(
       'produces valid iframe style for position=%s',
       async (pos) => {
-        const promise = showAuthIframe({ ...DEFAULT_OPTS, position: pos });
+        const promise = showAuthIframe({ ...DEFAULT_OPTS, position: pos, dismissible: true });
         const iframe = getIframe()!;
 
         expect(iframe.style.position).toBe('absolute');

@@ -51,9 +51,7 @@ export function clearHandoffFragment(): void {
 
     const remaining = params.toString();
     const newUrl =
-      window.location.pathname +
-      window.location.search +
-      (remaining ? `#${remaining}` : '');
+      window.location.pathname + window.location.search + (remaining ? `#${remaining}` : '');
 
     history.replaceState(null, '', newUrl);
   } catch {

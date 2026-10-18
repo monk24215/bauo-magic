@@ -1,5 +1,5 @@
-import { sql } from 'drizzle-orm';
 import type { Database } from '@wiredhowse/db';
+import { sql } from 'drizzle-orm';
 import type { CronLogger, JobResult } from './types';
 
 const JOB_NAME = 'cleanupPasswordResets';
@@ -8,10 +8,7 @@ const JOB_NAME = 'cleanupPasswordResets';
  * Hourly. Deletes password_resets whose expires_at is more than 7 days in the past.
  * Tokens expire after 1 hour; the extra 7-day grace period allows debugging.
  */
-export async function cleanupPasswordResets(
-  db: Database,
-  logger: CronLogger,
-): Promise<JobResult> {
+export async function cleanupPasswordResets(db: Database, logger: CronLogger): Promise<JobResult> {
   const start = Date.now();
   try {
     const rows = await db.execute<{ count: string }>(sql`

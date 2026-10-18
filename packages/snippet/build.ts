@@ -13,16 +13,15 @@
  *   WH_BUNDLE_ANALYZE=1 pnpm build               — print per-module sizes
  */
 
+import { readFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import * as esbuild from 'esbuild';
-import { readFileSync } from 'node:fs';
 
 async function main(): Promise<void> {
   const pkg = JSON.parse(readFileSync('./package.json', 'utf-8')) as { version: string };
   const version = pkg.version;
 
-  const API_BASE =
-    process.env['WH_API_BASE'] ?? 'https://magic-link.wiredhowse.app';
+  const API_BASE = process.env.WH_API_BASE ?? 'https://magic-link.wiredhowse.app';
 
   const sharedConfig: esbuild.BuildOptions = {
     bundle: true,
@@ -34,7 +33,7 @@ async function main(): Promise<void> {
       __VERSION__: JSON.stringify(version),
       __API_BASE__: JSON.stringify(API_BASE),
     },
-    sourcemap: process.env['NODE_ENV'] !== 'production',
+    sourcemap: process.env.NODE_ENV !== 'production',
   };
 
   // Build both bundles in parallel.
@@ -73,8 +72,7 @@ async function main(): Promise<void> {
 
   if (gzipped.length > LIMIT_KIB * 1024) {
     console.error(
-      `\n❌  Bundle size limit exceeded: ${gzKib} KiB gzipped (limit: ${LIMIT_KIB} KiB).\n` +
-        '   Review imports and remove any unnecessary code.\n',
+      `\n❌  Bundle size limit exceeded: ${gzKib} KiB gzipped (limit: ${LIMIT_KIB} KiB).\n   Review imports and remove any unnecessary code.\n`,
     );
     process.exit(1);
   }
@@ -82,7 +80,7 @@ async function main(): Promise<void> {
   console.log(`✓  snippet.js ${gzKib} KiB gzipped — within ${LIMIT_KIB} KiB limit`);
 
   // Log metafile for debugging large builds.
-  if (process.env['WH_BUNDLE_ANALYZE'] && mainResult.metafile) {
+  if (process.env.WH_BUNDLE_ANALYZE && mainResult.metafile) {
     console.log('\n--- main bundle inputs ---');
     for (const [file, meta] of Object.entries(mainResult.metafile.inputs)) {
       console.log(`  ${file}: ${(meta.bytes / 1024).toFixed(2)} KiB`);

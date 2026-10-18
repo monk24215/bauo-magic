@@ -125,7 +125,7 @@ describe('storage', () => {
     });
 
     it('uses a namespaced key per site key', () => {
-      mockLocal.setItem(`wh_session_pk_other`, JSON.stringify(STORED));
+      mockLocal.setItem('wh_session_pk_other', JSON.stringify(STORED));
       expect(getStoredSession(SITE_KEY)).toBeNull();
     });
   });
@@ -176,9 +176,9 @@ describe('storage', () => {
     });
 
     it('does not affect keys for other site keys', () => {
-      mockLocal.setItem(`wh_session_pk_other`, JSON.stringify(STORED));
+      mockLocal.setItem('wh_session_pk_other', JSON.stringify(STORED));
       clearStoredSession(SITE_KEY);
-      expect(mockLocal.getItem(`wh_session_pk_other`)).not.toBeNull();
+      expect(mockLocal.getItem('wh_session_pk_other')).not.toBeNull();
     });
   });
 });

@@ -1,5 +1,5 @@
-import { sql } from 'drizzle-orm';
 import type { Database } from '@wiredhowse/db';
+import { sql } from 'drizzle-orm';
 import type { CronLogger, JobResult } from './types';
 
 const JOB_NAME = 'purgeArchivedEndUsers';
@@ -14,10 +14,7 @@ const JOB_NAME = 'purgeArchivedEndUsers';
  *
  * Idempotent: re-running after a missed run deletes only what's past purge_after.
  */
-export async function purgeArchivedEndUsers(
-  db: Database,
-  logger: CronLogger,
-): Promise<JobResult> {
+export async function purgeArchivedEndUsers(db: Database, logger: CronLogger): Promise<JobResult> {
   const start = Date.now();
   try {
     const rows = await db.execute<{ count: string }>(sql`

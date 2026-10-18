@@ -9,8 +9,8 @@
  * escape hatch used throughout the test suite for Drizzle dependency injection.
  */
 
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Database } from '@wiredhowse/db';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { CronLogger, JobResult } from '../../src/cron/jobs/types';
 
 // ---------------------------------------------------------------------------

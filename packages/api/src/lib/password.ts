@@ -10,7 +10,8 @@ const ARGON2_OPTIONS = {
 
 // Dummy hash used to prevent timing attacks when no account is found.
 // Pre-hashed in module scope so we don't block the event loop on first use.
-const DUMMY_HASH = '$argon2id$v=19$m=19456,t=2,p=1$dGVzdHNhbHRzYWx0c2FsdA$AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+const DUMMY_HASH =
+  '$argon2id$v=19$m=19456,t=2,p=1$dGVzdHNhbHRzYWx0c2FsdA$AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
 
 export async function hashPassword(password: string): Promise<string> {
   return hash(password, ARGON2_OPTIONS);

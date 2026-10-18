@@ -1,12 +1,12 @@
+import { randomBytes } from 'node:crypto';
 import { db, oauthState, siteOwnerSessions, siteOwners } from '@wiredhowse/db';
 import { ErrorCode } from '@wiredhowse/shared';
 import { and, eq, gt, isNull } from 'drizzle-orm';
 import type { FastifyInstance } from 'fastify';
 import { config } from '../../config';
 import { sendError } from '../../errors';
-import { generateToken, hashToken } from '../../lib/crypto';
 import { buildCsrfCookie, buildOwnerSessionCookie } from '../../lib/cookies';
-import { randomBytes } from 'node:crypto';
+import { generateToken, hashToken } from '../../lib/crypto';
 import { hashBytes } from '../../lib/hashing';
 import { addDays, addMinutes, nowUtc } from '../../lib/time';
 
@@ -119,10 +119,7 @@ export async function googleAuthRoutes(app: FastifyInstance): Promise<void> {
     }
 
     // Consume the state to prevent replay.
-    await db
-      .update(oauthState)
-      .set({ consumedAt: now })
-      .where(eq(oauthState.id, stateRow.id));
+    await db.update(oauthState).set({ consumedAt: now }).where(eq(oauthState.id, stateRow.id));
 
     // Exchange authorization code for access token.
     let tokenData: GoogleTokenResponse;
@@ -141,7 +138,10 @@ export async function googleAuthRoutes(app: FastifyInstance): Promise<void> {
 
       if (!tokenRes.ok) {
         const errBody = await tokenRes.text();
-        request.log.error({ event: 'oauth_token_exchange_error', body: errBody }, 'Google token exchange failed');
+        request.log.error(
+          { event: 'oauth_token_exchange_error', body: errBody },
+          'Google token exchange failed',
+        );
         return reply.code(302).redirect(`${config.SITE_URL}/login?error=oauth_failed`);
       }
 
@@ -184,10 +184,7 @@ export async function googleAuthRoutes(app: FastifyInstance): Promise<void> {
 
     if (byGoogleSub) {
       ownerId = byGoogleSub.id;
-      await db
-        .update(siteOwners)
-        .set({ lastLoginAt: now })
-        .where(eq(siteOwners.id, ownerId));
+      await db.update(siteOwners).set({ lastLoginAt: now }).where(eq(siteOwners.id, ownerId));
     } else {
       // Try by email — link existing password account.
       const [byEmail] = await db
@@ -199,8 +196,7 @@ export async function googleAuthRoutes(app: FastifyInstance): Promise<void> {
       if (byEmail) {
         ownerId = byEmail.id;
         // Upgrade auth_method: password → both, google stays google.
-        const newAuthMethod =
-          byEmail.authMethod === 'password' ? 'both' : byEmail.authMethod;
+        const newAuthMethod = byEmail.authMethod === 'password' ? 'both' : byEmail.authMethod;
         await db
           .update(siteOwners)
           .set({
@@ -226,7 +222,10 @@ export async function googleAuthRoutes(app: FastifyInstance): Promise<void> {
           .returning({ id: siteOwners.id });
 
         if (!newOwner) {
-          request.log.error({ event: 'oauth_create_owner_failed' }, 'INSERT site_owner returned no row');
+          request.log.error(
+            { event: 'oauth_create_owner_failed' },
+            'INSERT site_owner returned no row',
+          );
           return reply.code(302).redirect(`${config.SITE_URL}/login?error=oauth_failed`);
         }
 
@@ -251,7 +250,10 @@ export async function googleAuthRoutes(app: FastifyInstance): Promise<void> {
       .returning({ id: siteOwnerSessions.id });
 
     if (!session) {
-      request.log.error({ event: 'oauth_session_create_failed', ownerId }, 'INSERT site_owner_session returned no row');
+      request.log.error(
+        { event: 'oauth_session_create_failed', ownerId },
+        'INSERT site_owner_session returned no row',
+      );
       return reply.code(302).redirect(`${config.SITE_URL}/login?error=oauth_failed`);
     }
 

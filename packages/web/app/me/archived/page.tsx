@@ -20,8 +20,8 @@ export default function ArchivedPage() {
         <h1 className="text-2xl font-semibold">Your data has been archived</h1>
 
         <p className="text-muted-foreground text-sm leading-relaxed">
-          Your account and sessions have been removed. An anonymised record is retained for
-          security purposes and will be purged after 24 months.
+          Your account and sessions have been removed. An anonymised record is retained for security
+          purposes and will be purged after 24 months.
         </p>
 
         <p className="text-muted-foreground text-sm">
@@ -31,10 +31,7 @@ export default function ArchivedPage() {
 
         <p className="text-xs text-muted-foreground">
           Questions?{' '}
-          <a
-            href="mailto:support@wiredhowse.app"
-            className="underline hover:no-underline"
-          >
+          <a href="mailto:support@wiredhowse.app" className="underline hover:no-underline">
             Contact support
           </a>
           .

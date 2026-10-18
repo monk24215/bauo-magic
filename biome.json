@@ -41,6 +41,16 @@
           "jsxQuoteStyle": "double"
         }
       }
+    },
+    {
+      "include": ["**/*.test.ts", "**/test/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noNonNullAssertion": "off"
+          }
+        }
+      }
     }
   ]
 }

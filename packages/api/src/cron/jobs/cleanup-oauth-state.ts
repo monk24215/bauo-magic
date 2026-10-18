@@ -1,5 +1,5 @@
-import { sql } from 'drizzle-orm';
 import type { Database } from '@wiredhowse/db';
+import { sql } from 'drizzle-orm';
 import type { CronLogger, JobResult } from './types';
 
 const JOB_NAME = 'cleanupOauthState';

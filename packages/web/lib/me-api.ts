@@ -37,9 +37,7 @@ async function meRequest<T>(
   if (body !== undefined) init.body = JSON.stringify(body);
   const res = await fetch(`/api/v1${path}`, init);
 
-  const json = (await res.json()) as
-    | { data: T }
-    | { error: { code: string; message: string } };
+  const json = (await res.json()) as { data: T } | { error: { code: string; message: string } };
 
   if (!res.ok) {
     const err = 'error' in json ? json.error : { code: 'UNKNOWN', message: 'Request failed' };
@@ -54,6 +52,5 @@ export const meApi = {
   get: <T>(path: string, token: string) => meRequest<T>('GET', path, token),
   patch: <T>(path: string, token: string, body: unknown) =>
     meRequest<T>('PATCH', path, token, body),
-  post: <T>(path: string, token: string, body?: unknown) =>
-    meRequest<T>('POST', path, token, body),
+  post: <T>(path: string, token: string, body?: unknown) => meRequest<T>('POST', path, token, body),
 };

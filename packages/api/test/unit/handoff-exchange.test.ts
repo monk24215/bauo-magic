@@ -366,10 +366,12 @@ describe('POST /v1/snippet/handoff/exchange', () => {
   });
 
   it('OPTIONS: 204 when clean origin matches despite other noise entries in allowedOrigins', async () => {
-    mockSiteSelect.mockResolvedValue([{
-      ...SITE_A,
-      allowedOrigins: ['https://other.com', 'https://site-a.example.com', 'https://another.com'],
-    }]);
+    mockSiteSelect.mockResolvedValue([
+      {
+        ...SITE_A,
+        allowedOrigins: ['https://other.com', 'https://site-a.example.com', 'https://another.com'],
+      },
+    ]);
 
     const res = await app.inject({
       method: 'OPTIONS',
@@ -389,10 +391,12 @@ describe('POST /v1/snippet/handoff/exchange', () => {
     // Regression: URLs stored with paths before write-time normalization was
     // enforced would cause CORS to reject a valid origin. The middleware now
     // extracts only the origin portion from stored entries before comparing.
-    mockSiteSelect.mockResolvedValue([{
-      ...SITE_A,
-      allowedOrigins: ['https://other.com', 'https://site-a.example.com/admin.php'],
-    }]);
+    mockSiteSelect.mockResolvedValue([
+      {
+        ...SITE_A,
+        allowedOrigins: ['https://other.com', 'https://site-a.example.com/admin.php'],
+      },
+    ]);
 
     const res = await app.inject({
       method: 'OPTIONS',
@@ -412,10 +416,12 @@ describe('POST /v1/snippet/handoff/exchange', () => {
     // Security check: a stored entry like https://evil.com/https://victim.com
     // must NOT match an Origin of https://victim.com. The URL parser correctly
     // extracts https://evil.com as the origin, so the comparison fails.
-    mockSiteSelect.mockResolvedValue([{
-      ...SITE_A,
-      allowedOrigins: ['https://evil.com/https://site-a.example.com'],
-    }]);
+    mockSiteSelect.mockResolvedValue([
+      {
+        ...SITE_A,
+        allowedOrigins: ['https://evil.com/https://site-a.example.com'],
+      },
+    ]);
 
     const res = await app.inject({
       method: 'OPTIONS',
@@ -432,10 +438,12 @@ describe('POST /v1/snippet/handoff/exchange', () => {
   });
 
   it('OPTIONS: 204 when stored origin has trailing slash — normalizes and matches', async () => {
-    mockSiteSelect.mockResolvedValue([{
-      ...SITE_A,
-      allowedOrigins: ['https://site-a.example.com/'],
-    }]);
+    mockSiteSelect.mockResolvedValue([
+      {
+        ...SITE_A,
+        allowedOrigins: ['https://site-a.example.com/'],
+      },
+    ]);
 
     const res = await app.inject({
       method: 'OPTIONS',

@@ -328,7 +328,7 @@ describe('POST /v1/snippet/session/check', () => {
   it('returns 200 { valid: true } with session and end_user on a valid token', async () => {
     mockSelectLimit
       .mockResolvedValueOnce([LIVE_SITE]) // site
-      .mockResolvedValueOnce([SESSION])   // session
+      .mockResolvedValueOnce([SESSION]) // session
       .mockResolvedValueOnce([END_USER]); // end_user
 
     const res = await app.inject({
@@ -346,7 +346,11 @@ describe('POST /v1/snippet/session/check', () => {
     const body = res.json<{
       data: {
         valid: boolean;
-        session: { id: string; expires_at: string; end_user: { id: string; email: string; display_name: null } };
+        session: {
+          id: string;
+          expires_at: string;
+          end_user: { id: string; email: string; display_name: null };
+        };
       };
     }>();
     expect(body.data.valid).toBe(true);
@@ -378,9 +382,7 @@ describe('POST /v1/snippet/session/check', () => {
   });
 
   it('does NOT call db.update when the session is not found', async () => {
-    mockSelectLimit
-      .mockResolvedValueOnce([LIVE_SITE])
-      .mockResolvedValueOnce([]); // no session
+    mockSelectLimit.mockResolvedValueOnce([LIVE_SITE]).mockResolvedValueOnce([]); // no session
 
     await app.inject({
       method: 'POST',
@@ -431,9 +433,7 @@ describe('POST /v1/snippet/session/check', () => {
   });
 
   it('sets CORS Allow-Origin header on valid POST', async () => {
-    mockSelectLimit
-      .mockResolvedValueOnce([LIVE_SITE])
-      .mockResolvedValueOnce([]);
+    mockSelectLimit.mockResolvedValueOnce([LIVE_SITE]).mockResolvedValueOnce([]);
 
     const res = await app.inject({
       method: 'POST',

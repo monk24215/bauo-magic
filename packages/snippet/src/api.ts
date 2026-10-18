@@ -56,7 +56,7 @@ export class ApiClient {
       'X-Site-Key': this.siteKey,
     };
     if (token !== undefined) {
-      headers['Authorization'] = `Bearer ${token}`;
+      headers.Authorization = `Bearer ${token}`;
     }
 
     let res: Response;
@@ -90,9 +90,7 @@ export class ApiClient {
   // -------------------------------------------------------------------------
 
   /** POST /v1/snippet/session/check */
-  checkSession(
-    token: string,
-  ): Promise<{ valid: true; session: Session } | { valid: false }> {
+  checkSession(token: string): Promise<{ valid: true; session: Session } | { valid: false }> {
     return this.post<{ token: string }, { valid: true; session: Session } | { valid: false }>(
       '/v1/snippet/session/check',
       { token },
@@ -114,9 +112,7 @@ export class ApiClient {
   }
 
   /** POST /v1/snippet/handoff/exchange */
-  exchangeHandoff(
-    handoffToken: string,
-  ): Promise<{ session_token: string; session: Session }> {
+  exchangeHandoff(handoffToken: string): Promise<{ session_token: string; session: Session }> {
     return this.post<{ handoff_token: string }, { session_token: string; session: Session }>(
       '/v1/snippet/handoff/exchange',
       { handoff_token: handoffToken },

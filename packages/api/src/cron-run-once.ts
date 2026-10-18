@@ -38,13 +38,13 @@ import type { CronLogger } from './cron/jobs/types';
 // Minimal stderr logger — no Fastify/pino dependency needed for a one-shot script.
 const logger: CronLogger = {
   info(obj, msg) {
-    process.stdout.write(JSON.stringify({ level: 'info', ...obj, msg }) + '\n');
+    process.stdout.write(`${JSON.stringify({ level: 'info', ...obj, msg })}\n`);
   },
   error(obj, msg) {
-    process.stderr.write(JSON.stringify({ level: 'error', ...obj, msg }) + '\n');
+    process.stderr.write(`${JSON.stringify({ level: 'error', ...obj, msg })}\n`);
   },
   warn(obj, msg) {
-    process.stderr.write(JSON.stringify({ level: 'warn', ...obj, msg }) + '\n');
+    process.stderr.write(`${JSON.stringify({ level: 'warn', ...obj, msg })}\n`);
   },
 };
 
@@ -56,8 +56,7 @@ const JOB_MAP: Record<string, () => Promise<{ deleted: number; durationMs: numbe
   cleanupPasswordResets: () => cleanupPasswordResets(db, logger),
   cleanupExpiredSessions: () => cleanupExpiredSessions(db, logger),
   purgeArchivedEndUsers: () => purgeArchivedEndUsers(db, logger),
-  cleanupAuditLog: () =>
-    cleanupAuditLog(db, logger, cronConfig.AUDIT_LOG_RETENTION_DAYS),
+  cleanupAuditLog: () => cleanupAuditLog(db, logger, cronConfig.AUDIT_LOG_RETENTION_DAYS),
 };
 
 async function main(): Promise<void> {
@@ -65,12 +64,11 @@ async function main(): Promise<void> {
 
   if (!jobName) {
     process.stderr.write(
-      `Usage: pnpm --filter @wiredhowse/api run-once <jobName>\n` +
-        `Available jobs:\n` +
-        Object.keys(JOB_MAP)
-          .map((n) => `  ${n}`)
-          .join('\n') +
-        '\n',
+      `Usage: pnpm --filter @wiredhowse/api run-once <jobName>\nAvailable jobs:\n${Object.keys(
+        JOB_MAP,
+      )
+        .map((n) => `  ${n}`)
+        .join('\n')}\n`,
     );
     process.exit(1);
   }
@@ -89,6 +87,6 @@ async function main(): Promise<void> {
 }
 
 main().catch((err: unknown) => {
-  process.stderr.write(String(err) + '\n');
+  process.stderr.write(`${String(err)}\n`);
   process.exit(1);
 });

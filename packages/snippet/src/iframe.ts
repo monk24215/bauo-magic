@@ -2,7 +2,7 @@
  * Iframe lifecycle manager — parent-side (snippet on customer site).
  *
  * Inserts a fixed-position overlay containing:
- *   - A semi-transparent backdrop  (click → dismiss)
+ *   - A semi-transparent backdrop  (click → dismiss, only when dismissible)
  *   - The auth-UI iframe            (postMessage protocol)
  *
  * postMessage protocol (spec § "Iframe rendering"):
@@ -190,7 +190,7 @@ export function showAuthIframe(options: IframeOptions): Promise<void> {
       if (typeof event.data !== 'object' || event.data === null) return;
 
       const msg = event.data as Record<string, unknown>;
-      const type = msg['type'];
+      const type = msg.type;
 
       switch (type) {
         case 'wh:ready': {
@@ -198,8 +198,8 @@ export function showAuthIframe(options: IframeOptions): Promise<void> {
           if (!optionsSent) {
             optionsSent = true;
             const optMsg: Record<string, unknown> = { type: 'wh:options' };
-            if (options.message !== undefined) optMsg['message'] = options.message;
-            if (options.redirectTo !== undefined) optMsg['redirectTo'] = options.redirectTo;
+            if (options.message !== undefined) optMsg.message = options.message;
+            if (options.redirectTo !== undefined) optMsg.redirectTo = options.redirectTo;
             // Use iframeOrigin as targetOrigin — never '*' for options payloads.
             iframe.contentWindow?.postMessage(optMsg, iframeOrigin);
           }
@@ -207,7 +207,7 @@ export function showAuthIframe(options: IframeOptions): Promise<void> {
         }
 
         case 'wh:size': {
-          const h = msg['height'];
+          const h = msg.height;
           if (typeof h === 'number' && h > 0) {
             // Cap at viewport height minus 32px padding.
             const maxH = Math.max(200, window.innerHeight - 32);

@@ -188,7 +188,11 @@ describe('POST /v1/me/close-and-archive', () => {
     const res = await app.inject({
       method: 'POST',
       url: '/v1/me/close-and-archive',
-      headers: { authorization: `Bearer ${VALID_TOKEN}`, 'content-type': 'application/json', ...CSRF_HEADERS },
+      headers: {
+        authorization: `Bearer ${VALID_TOKEN}`,
+        'content-type': 'application/json',
+        ...CSRF_HEADERS,
+      },
       body: JSON.stringify({}),
     });
 
@@ -203,7 +207,11 @@ describe('POST /v1/me/close-and-archive', () => {
     const res = await app.inject({
       method: 'POST',
       url: '/v1/me/close-and-archive',
-      headers: { authorization: `Bearer ${VALID_TOKEN}`, 'content-type': 'application/json', ...CSRF_HEADERS },
+      headers: {
+        authorization: `Bearer ${VALID_TOKEN}`,
+        'content-type': 'application/json',
+        ...CSRF_HEADERS,
+      },
       body: JSON.stringify({ confirmation: 'delete my data' }), // lowercase — not exact
     });
 
@@ -218,7 +226,11 @@ describe('POST /v1/me/close-and-archive', () => {
     const res = await app.inject({
       method: 'POST',
       url: '/v1/me/close-and-archive',
-      headers: { authorization: `Bearer ${VALID_TOKEN}`, 'content-type': 'application/json', ...CSRF_HEADERS },
+      headers: {
+        authorization: `Bearer ${VALID_TOKEN}`,
+        'content-type': 'application/json',
+        ...CSRF_HEADERS,
+      },
       body: JSON.stringify({ confirmation: 'DELETE MY' }),
     });
 
@@ -233,7 +245,11 @@ describe('POST /v1/me/close-and-archive', () => {
     const res = await app.inject({
       method: 'POST',
       url: '/v1/me/close-and-archive',
-      headers: { authorization: `Bearer ${VALID_TOKEN}`, 'content-type': 'application/json', ...CSRF_HEADERS },
+      headers: {
+        authorization: `Bearer ${VALID_TOKEN}`,
+        'content-type': 'application/json',
+        ...CSRF_HEADERS,
+      },
       body: JSON.stringify({ confirmation: 'DELETE MY DATA' }),
     });
 
@@ -248,7 +264,11 @@ describe('POST /v1/me/close-and-archive', () => {
     const res = await app.inject({
       method: 'POST',
       url: '/v1/me/close-and-archive',
-      headers: { authorization: `Bearer ${VALID_TOKEN}`, 'content-type': 'application/json', ...CSRF_HEADERS },
+      headers: {
+        authorization: `Bearer ${VALID_TOKEN}`,
+        'content-type': 'application/json',
+        ...CSRF_HEADERS,
+      },
       body: JSON.stringify({ confirmation: 'DELETE MY DATA' }),
     });
 
