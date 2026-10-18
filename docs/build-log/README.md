@@ -70,6 +70,8 @@ Legend: ✅ Complete · 🟡 In progress · 🔴 Blocked · ⚪ Not started
 
 ## Related documents
 
+These live in the maintainer's local checkout and are git-ignored, so they are not in this repository:
+
 - `PROJECT_BRIEF___wiredhowse-magic-link.md` — scope, autonomy rules, model policy
 - `CLAUDE.md` — session orientation file for Claude Code
 - `spec/` — technical specification (11 files)
