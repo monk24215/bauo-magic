@@ -1,5 +1,5 @@
-import { sql } from 'drizzle-orm';
 import type { Database } from '@wiredhowse/db';
+import { sql } from 'drizzle-orm';
 import type { CronLogger, JobResult } from './types';
 
 const JOB_NAME = 'cleanupHandoffTokens';
@@ -9,10 +9,7 @@ const JOB_NAME = 'cleanupHandoffTokens';
  * Handoff tokens have a 60-second lifetime; after 1 hour they are well past
  * expiry and the raw_session_token they carry is safe to remove.
  */
-export async function cleanupHandoffTokens(
-  db: Database,
-  logger: CronLogger,
-): Promise<JobResult> {
+export async function cleanupHandoffTokens(db: Database, logger: CronLogger): Promise<JobResult> {
   const start = Date.now();
   try {
     const rows = await db.execute<{ count: string }>(sql`

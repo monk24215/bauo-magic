@@ -36,7 +36,7 @@ const emitter = new EventEmitter();
 let api: ApiClient | null = null;
 let siteKey = '';
 let position: 'center' | 'top' | 'bottom' = 'center';
-let apiBase = __API_BASE__;
+const apiBase = __API_BASE__;
 
 // ---------------------------------------------------------------------------
 // Core session logic
@@ -295,9 +295,9 @@ async function init(mode: 'auto' | 'manual', onLoaded: string | null): Promise<v
 
 (function bootstrap() {
   // Capture any calls made before this script loaded.
-  const prevStub = (window as unknown as Record<string, unknown>)[
-    'wiredhowseAuth'
-  ] as PreloadStub | undefined;
+  const prevStub = (window as unknown as Record<string, unknown>).wiredhowseAuth as
+    | PreloadStub
+    | undefined;
   const pendingQueue: QueueEntry[] = prevStub?.q ?? [];
 
   const attrs = readScriptAttributes();
@@ -306,8 +306,7 @@ async function init(mode: 'auto' | 'manual', onLoaded: string | null): Promise<v
 
   if (!siteKey) {
     console.error(
-      `[wiredhowse v${__VERSION__}] Missing data-site-key attribute on the script tag. ` +
-        'Authentication is disabled.',
+      `[wiredhowse v${__VERSION__}] Missing data-site-key attribute on the script tag. Authentication is disabled.`,
     );
     return;
   }
@@ -342,7 +341,7 @@ async function init(mode: 'auto' | 'manual', onLoaded: string | null): Promise<v
   };
 
   // Replace the pre-load stub with the real API object.
-  (window as unknown as Record<string, unknown>)['wiredhowseAuth'] = wiredhowseAuth;
+  (window as unknown as Record<string, unknown>).wiredhowseAuth = wiredhowseAuth;
 
   // Replay any queued calls that arrived before the script loaded.
   replayQueue(pendingQueue);

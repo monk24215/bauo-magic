@@ -63,7 +63,7 @@ export function getStoredSession(siteKey: string): StoredSession | null {
       parsed === null ||
       !('token' in parsed) ||
       !('session' in parsed) ||
-      typeof (parsed as Record<string, unknown>)['token'] !== 'string'
+      typeof (parsed as Record<string, unknown>).token !== 'string'
     ) {
       return null;
     }

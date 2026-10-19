@@ -16,7 +16,9 @@ describe('parseHandoffFragment', () => {
 
   it('returns null for a token with wrong prefix', () => {
     // wh_s_ prefix is a session token, not a handoff token
-    expect(parseHandoffFragment('#wh_handoff=wh_s_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')).toBeNull();
+    expect(
+      parseHandoffFragment('#wh_handoff=wh_s_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'),
+    ).toBeNull();
   });
 
   it('returns the token for a valid wh_ho_ fragment', () => {

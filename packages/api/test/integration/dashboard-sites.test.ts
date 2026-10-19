@@ -60,13 +60,13 @@ vi.mock('@wiredhowse/db', async () => {
 import Fastify, { type FastifyInstance } from 'fastify';
 
 import {
+  emailVerifications,
   endUsers,
   handoffTokens,
   loginHistory,
   magicLinks,
   oauthState,
   passwordResets,
-  emailVerifications,
   sessions,
   siteOwnerSessions,
   siteOwners,
@@ -164,11 +164,15 @@ async function seedSite(
     .values({
       siteOwnerId,
       domain,
-      siteKey: `pk_${uniqueSuffix.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 22)}abcdefgh`.slice(0, 32),
+      siteKey: `pk_${uniqueSuffix.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 22)}abcdefgh`.slice(
+        0,
+        32,
+      ),
       state,
       verificationToken: `vt_${uniqueSuffix}`,
       allowedOrigins: ['https://test.example.com'],
-      verifiedAt: opts.verifiedAt !== undefined ? opts.verifiedAt : state === 'live' ? nowUtc() : null,
+      verifiedAt:
+        opts.verifiedAt !== undefined ? opts.verifiedAt : state === 'live' ? nowUtc() : null,
     })
     .returning();
   if (!site) throw new Error('seedSite: INSERT returned no row');
@@ -176,8 +180,15 @@ async function seedSite(
 }
 
 /** Returns a cookie header object for Fastify inject */
-function authHeaders(cookieValue: string): { cookie: string } {
-  return { cookie: `wh_owner_session=${cookieValue}` };
+// Session cookie plus a matching CSRF cookie/header pair (double-submit), which
+// every mutating dashboard route requires. Harmless on GETs.
+const CSRF_TOKEN = 'test-csrf-token-value';
+
+function authHeaders(cookieValue: string): { cookie: string; 'x-csrf-token': string } {
+  return {
+    cookie: `wh_owner_session=${cookieValue}; wh_csrf=${CSRF_TOKEN}`,
+    'x-csrf-token': CSRF_TOKEN,
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -347,10 +358,10 @@ describe('POST /v1/dashboard/sites', () => {
           state: string;
           site_key: string;
           verification_token: string;
-        };
-        verification_instructions: {
-          dns: { record_type: string; name: string; value: string };
-          meta: { tag: string; placement: string };
+          verification_instructions: {
+            dns: { record_type: string; name: string; value: string };
+            meta: { tag: string; placement: string };
+          };
         };
       };
     }>();
@@ -358,11 +369,11 @@ describe('POST /v1/dashboard/sites', () => {
     expect(body.data.site.state).toBe('pending_verification');
     expect(body.data.site.site_key).toMatch(/^pk_/);
     expect(body.data.site.verification_token).toBeTruthy();
-    expect(body.data.verification_instructions.dns.record_type).toBe('TXT');
-    expect(body.data.verification_instructions.dns.name).toBe(
+    expect(body.data.site.verification_instructions.dns.record_type).toBe('TXT');
+    expect(body.data.site.verification_instructions.dns.name).toBe(
       '_wiredhowse-verify.newsite.example.com',
     );
-    expect(body.data.verification_instructions.meta.tag).toContain('wh-verify');
+    expect(body.data.site.verification_instructions.meta.tag).toContain('wh-verify');
   });
 
   it('returns 400 SITE_LIMIT_REACHED when owner already has 3 sites', async () => {
@@ -450,17 +461,17 @@ describe('GET /v1/dashboard/sites/:id', () => {
           site_key: string;
           snippet_tag: string;
           verification_token: string;
-        };
-        verification_instructions: {
-          dns: { record_type: string; name: string; value: string };
-          meta: { tag: string };
+          verification_instructions: {
+            dns: { record_type: string; name: string; value: string };
+            meta: { tag: string };
+          };
         };
       };
     }>();
     expect(body.data.site.id).toBe(site.id);
     expect(body.data.site.snippet_tag).toContain(site.siteKey);
     expect(body.data.site.snippet_tag).toContain('<script');
-    expect(body.data.verification_instructions.dns.name).toContain(site.domain);
+    expect(body.data.site.verification_instructions.dns.name).toContain(site.domain);
   });
 
   it('returns 404 NOT_FOUND for non-existent id', async () => {
@@ -824,7 +835,10 @@ describe('POST /v1/dashboard/sites/:id/verify', () => {
   it('returns 404 NOT_FOUND for cross-tenant access — CROSS-TENANT 404', async () => {
     const owner1 = await seedSiteOwner();
     const owner2 = await seedSiteOwner();
-    const site = await seedSite(owner1.ownerId, { state: 'pending_verification', verifiedAt: null });
+    const site = await seedSite(owner1.ownerId, {
+      state: 'pending_verification',
+      verifiedAt: null,
+    });
 
     const res = await app.inject({
       method: 'POST',
@@ -986,7 +1000,9 @@ describe('GET /v1/dashboard/sites/:id/metrics', () => {
     });
 
     expect(res.statusCode).toBe(200);
-    const body = res.json<{ data: { logins_24h: number; logins_7d: number; logins_30d: number } }>();
+    const body = res.json<{
+      data: { logins_24h: number; logins_7d: number; logins_30d: number };
+    }>();
     expect(body.data.logins_24h).toBe(3);
     expect(body.data.logins_7d).toBe(3);
     expect(body.data.logins_30d).toBe(3);

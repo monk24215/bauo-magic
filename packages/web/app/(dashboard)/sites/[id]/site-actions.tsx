@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Modal } from '@/components/ui/modal';
 import { ApiError, api } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -355,28 +356,33 @@ function ClearSessionsButton({ siteId }: { siteId: string }) {
       </div>
 
       {showConfirm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-[#1d2026] border border-border rounded-lg p-6 max-w-sm w-full mx-4 space-y-4">
-            <h3 className="font-semibold">Clear all sessions?</h3>
-            <p className="text-sm text-muted-foreground">
-              Every active End User session will be invalidated immediately. They will need to
-              request a new magic link to log in again.
-            </p>
-            <div className="flex gap-3">
-              <Button variant="destructive" onClick={handleClear} disabled={loading} type="button">
-                {loading ? 'Clearing…' : 'Clear sessions'}
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => setShowConfirm(false)}
-                disabled={loading}
-                type="button"
-              >
-                Cancel
-              </Button>
-            </div>
+        <Modal
+          labelledBy="clear-sessions-title"
+          onClose={() => {
+            if (!loading) setShowConfirm(false);
+          }}
+        >
+          <h3 id="clear-sessions-title" className="font-semibold">
+            Clear all sessions?
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            Every active End User session will be invalidated immediately. They will need to request
+            a new magic link to log in again.
+          </p>
+          <div className="flex gap-3">
+            <Button variant="destructive" onClick={handleClear} disabled={loading} type="button">
+              {loading ? 'Clearing…' : 'Clear sessions'}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setShowConfirm(false)}
+              disabled={loading}
+              type="button"
+            >
+              Cancel
+            </Button>
           </div>
-        </div>
+        </Modal>
       )}
     </>
   );
@@ -428,49 +434,56 @@ function DeleteSiteButton({ siteId, domain }: { siteId: string; domain: string }
       </div>
 
       {showConfirm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-[#1d2026] border border-border rounded-lg p-6 max-w-sm w-full mx-4 space-y-4">
-            <h3 className="font-semibold text-destructive">Delete site?</h3>
-            <p className="text-sm text-muted-foreground">
-              This will permanently delete <strong>{domain}</strong> and all its data including
-              sessions, verification records, and settings. This cannot be undone.
-            </p>
-            <div className="space-y-2">
-              <Label htmlFor="confirm-domain">
-                Type <strong>{domain}</strong> to confirm
-              </Label>
-              <Input
-                id="confirm-domain"
-                value={confirm}
-                onChange={(e) => setConfirm(e.target.value)}
-                placeholder={domain}
-                autoComplete="off"
-                spellCheck={false}
-              />
-            </div>
-            <div className="flex gap-3">
-              <Button
-                variant="destructive"
-                onClick={handleDelete}
-                disabled={!confirmed || loading}
-                type="button"
-              >
-                {loading ? 'Deleting…' : 'Delete site'}
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowConfirm(false);
-                  setConfirm('');
-                }}
-                disabled={loading}
-                type="button"
-              >
-                Cancel
-              </Button>
-            </div>
+        <Modal
+          labelledBy="delete-site-title"
+          onClose={() => {
+            if (loading) return;
+            setShowConfirm(false);
+            setConfirm('');
+          }}
+        >
+          <h3 id="delete-site-title" className="font-semibold text-destructive">
+            Delete site?
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            This will permanently delete <strong>{domain}</strong> and all its data including
+            sessions, verification records, and settings. This cannot be undone.
+          </p>
+          <div className="space-y-2">
+            <Label htmlFor="confirm-domain">
+              Type <strong>{domain}</strong> to confirm
+            </Label>
+            <Input
+              id="confirm-domain"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              placeholder={domain}
+              autoComplete="off"
+              spellCheck={false}
+            />
           </div>
-        </div>
+          <div className="flex gap-3">
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={!confirmed || loading}
+              type="button"
+            >
+              {loading ? 'Deleting…' : 'Delete site'}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowConfirm(false);
+                setConfirm('');
+              }}
+              disabled={loading}
+              type="button"
+            >
+              Cancel
+            </Button>
+          </div>
+        </Modal>
       )}
     </>
   );

@@ -213,7 +213,8 @@ describe('GET /v1/magic/preflight', () => {
     expect(res.statusCode).toBe(200);
     const body = res.json<{ data: { email: string; site_domain: string; expires_at: string } }>();
     expect(body.data.email).toMatch(/\*\*\*/);
-    expect(body.data.email).not.toContain('@test.example'); // masked
+    // Local part is masked; the domain is kept (see maskEmail unit tests).
+    expect(body.data.email).toMatch(/^[^@*]\*\*\*[^@*]?@test\.example$/);
     expect(body.data.site_domain).toBe(site.domain);
     expect(body.data.expires_at).toBe(ml.expiresAt.toISOString());
   });
@@ -486,6 +487,15 @@ describe('GET /v1/magic/redeem', () => {
   it('transaction rollback on synthetic handoff failure leaves magic link unredeemed', async () => {
     const { rawToken, ml } = await seedMagicLink(site.id);
 
+    // Earlier tests in this file leave rows behind, so compare counts rather
+    // than expecting empty tables.
+    const countRows = async () => ({
+      sessions: (await testDb().select().from(sessions)).length,
+      handoffTokens: (await testDb().select().from(handoffTokens)).length,
+      loginHistory: (await testDb().select().from(loginHistory)).length,
+    });
+    const before = await countRows();
+
     // Force generateToken to throw when creating the handoff token
     const cryptoLib = await import('../../src/lib/crypto');
     const originalGenerate = cryptoLib.generateToken;
@@ -511,13 +521,8 @@ describe('GET /v1/magic/redeem', () => {
         .where(eq(magicLinks.id, ml.id));
       expect(check?.redeemedAt).toBeNull();
 
-      // No sessions, handoff tokens, or login history should exist
-      const sess = await testDb().select().from(sessions);
-      const ho = await testDb().select().from(handoffTokens);
-      const hist = await testDb().select().from(loginHistory);
-      expect(sess).toHaveLength(0);
-      expect(ho).toHaveLength(0);
-      expect(hist).toHaveLength(0);
+      // No sessions, handoff tokens, or login history rows were added
+      expect(await countRows()).toEqual(before);
     } finally {
       vi.restoreAllMocks();
     }

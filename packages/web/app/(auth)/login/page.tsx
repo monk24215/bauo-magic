@@ -12,7 +12,8 @@ import { useState } from 'react';
 
 const OAUTH_ERRORS: Record<string, string> = {
   google_denied: 'Google sign-in was cancelled. You can try again or use email and password.',
-  google_unverified_email: 'Your Google account email is not verified. Please verify it with Google first.',
+  google_unverified_email:
+    'Your Google account email is not verified. Please verify it with Google first.',
   oauth_invalid: 'The sign-in link expired or was already used. Please try again.',
   oauth_failed: 'Google sign-in failed. Please try again or use email and password.',
 };

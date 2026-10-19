@@ -216,7 +216,11 @@ describe('PATCH /v1/me', () => {
     const res = await app.inject({
       method: 'PATCH',
       url: '/v1/me',
-      headers: { 'content-type': 'application/json', authorization: `Bearer ${VALID_TOKEN}`, ...CSRF_HEADERS },
+      headers: {
+        'content-type': 'application/json',
+        authorization: `Bearer ${VALID_TOKEN}`,
+        ...CSRF_HEADERS,
+      },
       body: JSON.stringify({ display_name: 'New Name' }),
     });
 
@@ -231,7 +235,11 @@ describe('PATCH /v1/me', () => {
     const res = await app.inject({
       method: 'PATCH',
       url: '/v1/me',
-      headers: { 'content-type': 'application/json', authorization: `Bearer ${VALID_TOKEN}`, ...CSRF_HEADERS },
+      headers: {
+        'content-type': 'application/json',
+        authorization: `Bearer ${VALID_TOKEN}`,
+        ...CSRF_HEADERS,
+      },
       body: JSON.stringify({}),
     });
 
@@ -249,7 +257,11 @@ describe('PATCH /v1/me', () => {
     const res = await app.inject({
       method: 'PATCH',
       url: '/v1/me',
-      headers: { 'content-type': 'application/json', authorization: `Bearer ${VALID_TOKEN}`, ...CSRF_HEADERS },
+      headers: {
+        'content-type': 'application/json',
+        authorization: `Bearer ${VALID_TOKEN}`,
+        ...CSRF_HEADERS,
+      },
       body: JSON.stringify({ display_name: null }),
     });
 
@@ -264,7 +276,11 @@ describe('PATCH /v1/me', () => {
     const res = await app.inject({
       method: 'PATCH',
       url: '/v1/me',
-      headers: { 'content-type': 'application/json', authorization: `Bearer ${VALID_TOKEN}`, ...CSRF_HEADERS },
+      headers: {
+        'content-type': 'application/json',
+        authorization: `Bearer ${VALID_TOKEN}`,
+        ...CSRF_HEADERS,
+      },
       body: JSON.stringify({ display_name: 'x'.repeat(101) }),
     });
 
@@ -278,7 +294,11 @@ describe('PATCH /v1/me', () => {
     const res = await app.inject({
       method: 'PATCH',
       url: '/v1/me',
-      headers: { 'content-type': 'application/json', authorization: `Bearer ${VALID_TOKEN}`, ...CSRF_HEADERS },
+      headers: {
+        'content-type': 'application/json',
+        authorization: `Bearer ${VALID_TOKEN}`,
+        ...CSRF_HEADERS,
+      },
       body: JSON.stringify({ display_name: 12345 }),
     });
 

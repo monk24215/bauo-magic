@@ -3,8 +3,8 @@ import { eq } from 'drizzle-orm';
 import type { FastifyInstance } from 'fastify';
 import { clearCsrfCookie, clearOwnerSessionCookie } from '../../lib/cookies';
 import { nowUtc } from '../../lib/time';
-import { requireCsrfToken } from '../../middleware/csrf';
 import { requireSiteOwnerSession } from '../../middleware/auth-owner';
+import { requireCsrfToken } from '../../middleware/csrf';
 
 export async function logoutRoutes(app: FastifyInstance): Promise<void> {
   /**

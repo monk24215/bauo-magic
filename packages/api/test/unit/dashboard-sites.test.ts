@@ -62,6 +62,7 @@ function nextDbResponse(): Promise<unknown[]> {
 // .limit()) and has a .limit() method for queries that use it.
 const whereResult = () => ({
   limit: () => nextDbResponse(),
+  // biome-ignore lint/suspicious/noThenProperty: intentional thenable that mimics a Drizzle query builder
   then: (resolve: (v: unknown[]) => unknown, reject?: (e: unknown) => unknown) =>
     nextDbResponse().then(resolve, reject),
 });
@@ -229,11 +230,15 @@ describe('dashboard-sites unit tests', () => {
       // 2. Count sites (awaited directly — no .limit)
       // 3. Domain uniqueness (.limit(1))
       // 4. Insert site (.returning())
-      const newSite = { ...SITE, domain: 'newsite.example.com', state: 'pending_verification' as const };
-      queueDbResponse(OWNER_SESSION_ROW);  // 1. auth
-      queueDbResponse({ count: 0 });       // 2. count
-      queueDbResponse();                   // 3. domain not found
-      queueDbResponse(newSite);            // 4. insert returns site
+      const newSite = {
+        ...SITE,
+        domain: 'newsite.example.com',
+        state: 'pending_verification' as const,
+      };
+      queueDbResponse(OWNER_SESSION_ROW); // 1. auth
+      queueDbResponse({ count: 0 }); // 2. count
+      queueDbResponse(); // 3. domain not found
+      queueDbResponse(newSite); // 4. insert returns site
 
       const res = await app.inject({
         method: 'POST',
@@ -250,8 +255,8 @@ describe('dashboard-sites unit tests', () => {
 
     it('returns 400 SITE_LIMIT_REACHED when count is 3', async () => {
       // 1. Auth, 2. Count = 3 (limit reached before domain check)
-      queueDbResponse(OWNER_SESSION_ROW);   // 1. auth
-      queueDbResponse({ count: 3 });        // 2. count
+      queueDbResponse(OWNER_SESSION_ROW); // 1. auth
+      queueDbResponse({ count: 3 }); // 2. count
 
       const res = await app.inject({
         method: 'POST',
@@ -266,9 +271,9 @@ describe('dashboard-sites unit tests', () => {
 
     it('returns 409 DOMAIN_ALREADY_REGISTERED when domain exists', async () => {
       // 1. Auth, 2. Count = 0, 3. Domain exists
-      queueDbResponse(OWNER_SESSION_ROW);        // 1. auth
-      queueDbResponse({ count: 0 });             // 2. count
-      queueDbResponse({ id: 'st_other' });       // 3. domain found
+      queueDbResponse(OWNER_SESSION_ROW); // 1. auth
+      queueDbResponse({ count: 0 }); // 2. count
+      queueDbResponse({ id: 'st_other' }); // 3. domain found
 
       const res = await app.inject({
         method: 'POST',
@@ -314,7 +319,7 @@ describe('dashboard-sites unit tests', () => {
   describe('GET /v1/dashboard/sites/:id', () => {
     it('returns site with snippet_tag when found', async () => {
       queueDbResponse(OWNER_SESSION_ROW); // 1. auth
-      queueDbResponse(SITE);              // 2. site lookup
+      queueDbResponse(SITE); // 2. site lookup
 
       const res = await app.inject({
         method: 'GET',
@@ -329,19 +334,19 @@ describe('dashboard-sites unit tests', () => {
             id: string;
             snippet_tag: string;
             verification_token: string;
+            verification_instructions: { dns: { record_type: string } };
           };
-          verification_instructions: { dns: { record_type: string } };
         };
       }>();
       expect(body.data.site.id).toBe(SITE.id);
       expect(body.data.site.snippet_tag).toContain(SITE.siteKey);
       expect(body.data.site.snippet_tag).toContain('<script');
-      expect(body.data.verification_instructions.dns.record_type).toBe('TXT');
+      expect(body.data.site.verification_instructions.dns.record_type).toBe('TXT');
     });
 
     it('returns 404 NOT_FOUND when cross-tenant (select returns empty)', async () => {
       queueDbResponse(OWNER_SESSION_ROW); // 1. auth
-      queueDbResponse();                  // 2. site not found
+      queueDbResponse(); // 2. site not found
 
       const res = await app.inject({
         method: 'GET',
@@ -412,7 +417,7 @@ describe('dashboard-sites unit tests', () => {
     it('returns 400 when trying to enable an unverified site to live', async () => {
       const unverifiedSite = { ...SITE, state: 'disabled' as const, verifiedAt: null };
       queueDbResponse(OWNER_SESSION_ROW); // 1. auth
-      queueDbResponse(unverifiedSite);    // 2. site lookup
+      queueDbResponse(unverifiedSite); // 2. site lookup
 
       const res = await app.inject({
         method: 'PATCH',
@@ -426,7 +431,7 @@ describe('dashboard-sites unit tests', () => {
 
     it('returns 404 NOT_FOUND for cross-tenant access', async () => {
       queueDbResponse(OWNER_SESSION_ROW); // 1. auth
-      queueDbResponse();                  // 2. site not found
+      queueDbResponse(); // 2. site not found
 
       const res = await app.inject({
         method: 'PATCH',
@@ -484,7 +489,7 @@ describe('dashboard-sites unit tests', () => {
 
     it('returns 404 NOT_FOUND for cross-tenant access', async () => {
       queueDbResponse(OWNER_SESSION_ROW); // 1. auth
-      queueDbResponse();                  // 2. site not found
+      queueDbResponse(); // 2. site not found
 
       const res = await app.inject({
         method: 'DELETE',

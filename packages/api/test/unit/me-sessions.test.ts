@@ -67,8 +67,8 @@ vi.mock('@wiredhowse/db', () => ({
       from: () => ({
         innerJoin: () => ({
           where: () => ({
-            limit: mockLimit,       // auth middleware: ...limit(1)
-            orderBy: mockOrderBy,   // GET /sessions:  ...orderBy(desc(...))
+            limit: mockLimit, // auth middleware: ...limit(1)
+            orderBy: mockOrderBy, // GET /sessions:  ...orderBy(desc(...))
           }),
         }),
         // Direct where without join (fallback, not currently used by these routes)
@@ -176,7 +176,7 @@ describe('GET /v1/me/sessions', () => {
 
   it('returns 200 with empty sessions array when no active sessions', async () => {
     mockLimit.mockResolvedValueOnce([AUTH_ROW]); // auth succeeds
-    mockOrderBy.mockResolvedValueOnce([]);        // no sessions found
+    mockOrderBy.mockResolvedValueOnce([]); // no sessions found
 
     const res = await app.inject({
       method: 'GET',
@@ -190,10 +190,7 @@ describe('GET /v1/me/sessions', () => {
   });
 
   it('returns sessions with is_current=true for the calling session', async () => {
-    const rows = [
-      makeFakeSessionRow(CURRENT_SESSION_ID),
-      makeFakeSessionRow('sess_other'),
-    ];
+    const rows = [makeFakeSessionRow(CURRENT_SESSION_ID), makeFakeSessionRow('sess_other')];
     mockLimit.mockResolvedValueOnce([AUTH_ROW]);
     mockOrderBy.mockResolvedValueOnce(rows);
 

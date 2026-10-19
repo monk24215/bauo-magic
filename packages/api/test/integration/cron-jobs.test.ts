@@ -24,14 +24,15 @@ vi.hoisted(() => {
 // Real DB wiring (testcontainers)
 // ---------------------------------------------------------------------------
 
+import type { Database } from '@wiredhowse/db';
+import { sql } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import { GenericContainer, type StartedTestContainer, Wait } from 'testcontainers';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
-import type { Database } from '@wiredhowse/db';
 
-import * as schema from '../../../db/src/schema';
 import { runMigrations } from '../../../db/src/migrate';
+import * as schema from '../../../db/src/schema';
 
 // ---------------------------------------------------------------------------
 // Job imports
@@ -86,7 +87,7 @@ afterAll(async () => {
 
 afterEach(async () => {
   // Truncate in FK-safe order (children first)
-  await db.execute(schema.sql`TRUNCATE TABLE
+  await db.execute(sql`TRUNCATE TABLE
     audit_log,
     archived_end_users,
     login_history,

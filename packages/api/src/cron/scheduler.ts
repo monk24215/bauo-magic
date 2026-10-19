@@ -1,8 +1,7 @@
-import cron from 'node-cron';
 import type { Database } from '@wiredhowse/db';
 import { db } from '@wiredhowse/db';
+import cron from 'node-cron';
 import { cronConfig } from './config';
-import type { CronLogger } from './jobs/types';
 import {
   cleanupAuditLog,
   cleanupEmailVerifications,
@@ -13,12 +12,16 @@ import {
   cleanupPasswordResets,
   purgeArchivedEndUsers,
 } from './jobs/index';
+import type { CronLogger } from './jobs/types';
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
-type SimpleFn = (db: Database, logger: CronLogger) => Promise<{ job: string; deleted: number; durationMs: number }>;
+type SimpleFn = (
+  db: Database,
+  logger: CronLogger,
+) => Promise<{ job: string; deleted: number; durationMs: number }>;
 
 export interface SchedulerHandle {
   /** Activate all cron tasks. Call once at startup. */
@@ -36,11 +39,7 @@ export interface SchedulerHandle {
  * One failing job emits an error log (the job handles it internally) but
  * does NOT prevent subsequent jobs from running — each job has its own catch.
  */
-async function runGroup(
-  jobs: SimpleFn[],
-  database: Database,
-  logger: CronLogger,
-): Promise<void> {
+async function runGroup(jobs: SimpleFn[], database: Database, logger: CronLogger): Promise<void> {
   for (const job of jobs) {
     await job(database, logger);
   }

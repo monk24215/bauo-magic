@@ -1,11 +1,11 @@
+import { randomBytes } from 'node:crypto';
 import { db, siteOwnerSessions, siteOwners } from '@wiredhowse/db';
 import { ErrorCode, loginSchema } from '@wiredhowse/shared';
 import { eq } from 'drizzle-orm';
 import type { FastifyInstance } from 'fastify';
 import { send400, sendError } from '../../errors';
-import { randomBytes } from 'node:crypto';
-import { generateToken, hashToken } from '../../lib/crypto';
 import { buildCsrfCookie, buildOwnerSessionCookie } from '../../lib/cookies';
+import { generateToken, hashToken } from '../../lib/crypto';
 import { hashBytes, hashForLog } from '../../lib/hashing';
 import { dummyVerify, verifyPassword } from '../../lib/password';
 import { addDays, addHours, nowUtc } from '../../lib/time';
@@ -73,11 +73,7 @@ export async function loginRoutes(app: FastifyInstance): Promise<void> {
     }
 
     // Look up the account.
-    const [owner] = await db
-      .select()
-      .from(siteOwners)
-      .where(eq(siteOwners.email, email))
-      .limit(1);
+    const [owner] = await db.select().from(siteOwners).where(eq(siteOwners.email, email)).limit(1);
 
     if (!owner) {
       // Dummy verify — maintain constant timing so the caller can't enumerate emails.

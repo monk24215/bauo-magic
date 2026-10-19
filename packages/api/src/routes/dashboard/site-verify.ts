@@ -153,7 +153,12 @@ export async function siteVerifyRoutes(app: FastifyInstance): Promise<void> {
 
       await db
         .update(sites)
-        .set({ state: 'live', verificationMethod: method, verifiedAt: now, allowedOrigins: seededOrigins })
+        .set({
+          state: 'live',
+          verificationMethod: method,
+          verifiedAt: now,
+          allowedOrigins: seededOrigins,
+        })
         .where(eq(sites.id, site.id));
 
       return reply.code(200).send({ data: { verified: true, method } });

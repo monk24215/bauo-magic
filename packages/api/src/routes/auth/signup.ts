@@ -1,8 +1,4 @@
-import {
-  db,
-  emailVerifications,
-  siteOwners,
-} from '@wiredhowse/db';
+import { db, emailVerifications, siteOwners } from '@wiredhowse/db';
 import { ErrorCode, signupSchema } from '@wiredhowse/shared';
 import { eq } from 'drizzle-orm';
 import type { FastifyInstance } from 'fastify';
@@ -58,7 +54,12 @@ export async function signupRoutes(app: FastifyInstance): Promise<void> {
       .limit(1);
 
     if (existing.length > 0) {
-      sendError(reply, 409, ErrorCode.EMAIL_ALREADY_REGISTERED, 'This email is already registered. Please log in.');
+      sendError(
+        reply,
+        409,
+        ErrorCode.EMAIL_ALREADY_REGISTERED,
+        'This email is already registered. Please log in.',
+      );
       return;
     }
 
@@ -99,10 +100,7 @@ export async function signupRoutes(app: FastifyInstance): Promise<void> {
       verifyUrl,
       expiresInHours: EMAIL_VERIFICATION_TTL_HOURS,
     }).catch((err: unknown) => {
-      request.log.error(
-        { err, ownerId: owner.id },
-        'signup: failed to send verification email',
-      );
+      request.log.error({ err, ownerId: owner.id }, 'signup: failed to send verification email');
     });
 
     return reply.code(201).send({

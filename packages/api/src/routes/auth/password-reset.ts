@@ -1,9 +1,5 @@
 import { db, passwordResets, siteOwnerSessions, siteOwners } from '@wiredhowse/db';
-import {
-  ErrorCode,
-  requestPasswordResetSchema,
-  resetPasswordSchema,
-} from '@wiredhowse/shared';
+import { ErrorCode, requestPasswordResetSchema, resetPasswordSchema } from '@wiredhowse/shared';
 import { and, eq, gt, isNull } from 'drizzle-orm';
 import type { FastifyInstance } from 'fastify';
 import { config } from '../../config';
@@ -77,14 +73,16 @@ export async function passwordResetRoutes(app: FastifyInstance): Promise<void> {
 
         const resetUrl = `${config.SITE_URL}/reset-password?token=${encodeURIComponent(rawToken)}`;
 
-        sendPasswordResetEmail({ to: email, resetUrl, expiresInHours: PASSWORD_RESET_TTL_HOURS }).catch(
-          (err: unknown) => {
-            request.log.error(
-              { err, ownerId: owner.id },
-              'request-password-reset: failed to send email',
-            );
-          },
-        );
+        sendPasswordResetEmail({
+          to: email,
+          resetUrl,
+          expiresInHours: PASSWORD_RESET_TTL_HOURS,
+        }).catch((err: unknown) => {
+          request.log.error(
+            { err, ownerId: owner.id },
+            'request-password-reset: failed to send email',
+          );
+        });
       } else {
         request.log.info(
           { event: 'password_reset_unknown_email', emailHash: hashForLog(email) },
@@ -160,10 +158,7 @@ export async function passwordResetRoutes(app: FastifyInstance): Promise<void> {
       .set({ passwordHash: newHash, authMethod: newAuthMethod, emailVerifiedAt: now })
       .where(eq(siteOwners.id, reset.siteOwnerId));
 
-    await db
-      .update(passwordResets)
-      .set({ usedAt: now })
-      .where(eq(passwordResets.id, reset.id));
+    await db.update(passwordResets).set({ usedAt: now }).where(eq(passwordResets.id, reset.id));
 
     // Revoke all existing sessions as a security measure.
     await db

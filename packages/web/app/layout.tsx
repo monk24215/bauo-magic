@@ -1,6 +1,6 @@
+import type { Metadata } from 'next';
 import { Bebas_Neue, DM_Sans, JetBrains_Mono } from 'next/font/google';
 import { headers } from 'next/headers';
-import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import './globals.css';
 
@@ -43,7 +43,13 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       className={`${bebasNeue.variable} ${dmSans.variable} ${jetbrainsMono.variable}`}
     >
       <body>
-        {/* Fixed viewport background — logo perfectly centered, max 810px, stays in place on every page */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:text-primary-foreground"
+        >
+          Skip to main content
+        </a>
+        {/* Fixed viewport background — decorative logo centered, up to 810px wide, stays in place on every page */}
         <div
           aria-hidden="true"
           style={{
@@ -57,18 +63,17 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           }}
         >
           <img
-            src="https://magic-link.wiredhowse.app/logo.png"
+            src="/logo.png"
             alt=""
             style={{
-              width: '810px',
-              maxWidth: '810px',
+              width: 'min(810px, 90vw)',
               opacity: 0.07,
               userSelect: 'none',
             }}
           />
         </div>
         {/* All page content sits above the fixed background logo */}
-        <div style={{ position: 'relative', zIndex: 1 }}>
+        <div id="main-content" tabIndex={-1} style={{ position: 'relative', zIndex: 1 }}>
           {children}
         </div>
       </body>

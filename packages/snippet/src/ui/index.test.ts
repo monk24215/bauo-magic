@@ -74,6 +74,10 @@ function getHeadline(): string {
   return document.querySelector('.wh-headline')?.textContent ?? '';
 }
 
+function getDescription(): string {
+  return document.querySelector('.wh-form-desc')?.textContent ?? '';
+}
+
 function getRetryBtn(): HTMLButtonElement | null {
   return document.querySelector<HTMLButtonElement>('.wh-retry');
 }
@@ -115,7 +119,7 @@ let mockParentPostMessage: ReturnType<typeof vi.fn>;
  * BEFORE or INSIDE this function — the module's sendMagicLink() reads
  * the global fetch at call time, not at import time.
  */
-async function loadUiModule(): Promise<void> {
+async function loadUiModule(extraSearch = ''): Promise<void> {
   // Reset DOM to a clean slate.
   document.head.innerHTML = '';
   document.body.innerHTML = '';
@@ -137,8 +141,8 @@ async function loadUiModule(): Promise<void> {
   // Simulate being inside the iframe: location search params.
   Object.defineProperty(window, 'location', {
     value: {
-      href: `${API_BASE}/v1/snippet/ui?site_key=pk_test&origin=${CUSTOMER_ORIGIN}`,
-      search: `?site_key=pk_test&origin=${CUSTOMER_ORIGIN}`,
+      href: `${API_BASE}/v1/snippet/ui?site_key=pk_test&origin=${CUSTOMER_ORIGIN}${extraSearch}`,
+      search: `?site_key=pk_test&origin=${CUSTOMER_ORIGIN}${extraSearch}`,
       pathname: '/v1/snippet/ui',
       hash: '',
       origin: API_BASE,
@@ -190,16 +194,14 @@ describe('boot', () => {
 
   it('sends wh:ready to parent after rendering', async () => {
     await loadUiModule();
-    const readyCall = mockParentPostMessage.mock.calls.find(
-      (args: unknown[]) => {
-        const msg = args[0];
-        return (
-          typeof msg === 'object' &&
-          msg !== null &&
-          (msg as Record<string, unknown>)['type'] === 'wh:ready'
-        );
-      },
-    );
+    const readyCall = mockParentPostMessage.mock.calls.find((args: unknown[]) => {
+      const msg = args[0];
+      return (
+        typeof msg === 'object' &&
+        msg !== null &&
+        (msg as Record<string, unknown>).type === 'wh:ready'
+      );
+    });
     expect(readyCall).toBeDefined();
   });
 
@@ -230,8 +232,13 @@ describe('email-entry state', () => {
     expect(btn!.textContent).toContain('Send magic link');
   });
 
-  it('renders a close/dismiss button', async () => {
+  it('is a hard gate by default, with no close button', async () => {
     await loadUiModule();
+    expect(getCloseBtn()).toBeNull();
+  });
+
+  it('renders a close button when dismissible=1', async () => {
+    await loadUiModule('&dismissible=1');
     expect(getCloseBtn()).not.toBeNull();
   });
 
@@ -247,19 +254,17 @@ describe('email-entry state', () => {
 
 describe('close button', () => {
   it('sends wh:dismiss to parent when clicked', async () => {
-    await loadUiModule();
+    await loadUiModule('&dismissible=1');
     getCloseBtn()!.click();
 
-    const dismissCall = mockParentPostMessage.mock.calls.find(
-      (args: unknown[]) => {
-        const msg = args[0];
-        return (
-          typeof msg === 'object' &&
-          msg !== null &&
-          (msg as Record<string, unknown>)['type'] === 'wh:dismiss'
-        );
-      },
-    );
+    const dismissCall = mockParentPostMessage.mock.calls.find((args: unknown[]) => {
+      const msg = args[0];
+      return (
+        typeof msg === 'object' &&
+        msg !== null &&
+        (msg as Record<string, unknown>).type === 'wh:dismiss'
+      );
+    });
     expect(dismissCall).toBeDefined();
   });
 });
@@ -518,14 +523,14 @@ describe('wh:options from parent', () => {
     ).not.toThrow();
   });
 
-  it('updates the headline after receiving wh:options with a custom message', async () => {
+  it('shows the custom message as the form description after wh:options', async () => {
     await loadUiModule();
 
     const msg = 'Members-only content — please sign in';
     fireParentMessage({ type: 'wh:options', message: msg }, CUSTOMER_ORIGIN);
     await flushMicrotasks(2);
 
-    expect(getHeadline()).toContain(msg);
+    expect(getDescription()).toContain(msg);
   });
 
   it('ignores wh:options from a source that is not window.parent', async () => {
@@ -557,16 +562,14 @@ describe('wh:size reporting', () => {
     await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
     await flushMicrotasks(1);
 
-    const sizeCall = mockParentPostMessage.mock.calls.find(
-      (args: unknown[]) => {
-        const msg = args[0];
-        return (
-          typeof msg === 'object' &&
-          msg !== null &&
-          (msg as Record<string, unknown>)['type'] === 'wh:size'
-        );
-      },
-    );
+    const sizeCall = mockParentPostMessage.mock.calls.find((args: unknown[]) => {
+      const msg = args[0];
+      return (
+        typeof msg === 'object' &&
+        msg !== null &&
+        (msg as Record<string, unknown>).type === 'wh:size'
+      );
+    });
     expect(sizeCall).toBeDefined();
     const sizeMsg = sizeCall![0] as { type: string; height: number };
     expect(typeof sizeMsg.height).toBe('number');

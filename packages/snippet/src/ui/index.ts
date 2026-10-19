@@ -89,10 +89,7 @@ function sendToParent(msg: Record<string, unknown>): void {
 
 function reportSize(): void {
   // Use scrollHeight so the parent can size the iframe to fit content.
-  const h = Math.max(
-    document.documentElement.scrollHeight,
-    document.body.scrollHeight,
-  );
+  const h = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight);
   sendToParent({ type: 'wh:size', height: h });
 }
 
@@ -246,10 +243,7 @@ body{
 // DOM helpers (text-content based to avoid XSS)
 // ---------------------------------------------------------------------------
 
-function el<K extends keyof HTMLElementTagNameMap>(
-  tag: K,
-  cls?: string,
-): HTMLElementTagNameMap[K] {
+function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string): HTMLElementTagNameMap[K] {
   const e = document.createElement(tag);
   if (cls) e.className = cls;
   return e;
@@ -259,10 +253,7 @@ function txt(content: string): Text {
   return document.createTextNode(content);
 }
 
-function setAttrs(
-  element: Element,
-  attrs: Record<string, string>,
-): void {
+function setAttrs(element: Element, attrs: Record<string, string>): void {
   for (const [k, v] of Object.entries(attrs)) {
     element.setAttribute(k, v);
   }
@@ -346,11 +337,7 @@ function render(s: UiState): void {
   requestAnimationFrame(reportSize);
 }
 
-function renderEmailForm(
-  container: HTMLElement,
-  loading: boolean,
-  errorText: string | null,
-): void {
+function renderEmailForm(container: HTMLElement, loading: boolean, errorText: string | null): void {
   // Headline + description
   const headline = el('div', 'wh-headline');
   headline.appendChild(txt('Verification Required'));
@@ -414,7 +401,11 @@ function renderEmailForm(
 
   // Footer
   const footer = el('div', 'wh-footer');
-  footer.appendChild(txt('Secure your site for free with magic-Link | community use service from WiredHowse Builders Cooperative'));
+  footer.appendChild(
+    txt(
+      'Secure your site for free with magic-Link | community use service from WiredHowse Builders Cooperative',
+    ),
+  );
   container.appendChild(footer);
 
   // Focus the email input (unless we're in the loading state).
@@ -438,13 +429,11 @@ function renderSentState(container: HTMLElement, email: string): void {
   const strong = el('strong');
   strong.appendChild(txt(email));
   subtext.appendChild(strong);
-  subtext.appendChild(
-    txt('. Click the link in the email to sign in — it expires in 15 minutes.'),
-  );
+  subtext.appendChild(txt('. Click the link in the email to sign in — it expires in 15 minutes.'));
   container.appendChild(subtext);
 
   const retryRow = el('div', 'wh-subtext');
-  retryRow.appendChild(txt("Didn’t receive it? "));
+  retryRow.appendChild(txt('Didn’t receive it? '));
   const retryBtn = el('button', 'wh-retry');
   retryBtn.setAttribute('type', 'button');
   retryBtn.appendChild(txt('Try again'));
@@ -455,7 +444,11 @@ function renderSentState(container: HTMLElement, email: string): void {
   container.appendChild(retryRow);
 
   const footer = el('div', 'wh-footer');
-  footer.appendChild(txt('Secure your site for free with magic-Link | community use service from WiredHowse Builders Cooperative'));
+  footer.appendChild(
+    txt(
+      'Secure your site for free with magic-Link | community use service from WiredHowse Builders Cooperative',
+    ),
+  );
   container.appendChild(footer);
 }
 
@@ -524,7 +517,7 @@ async function sendMagicLink(email: string): Promise<void> {
     const env = json as Record<string, unknown>;
 
     if ('error' in env) {
-      const err = env['error'] as { code: string; message: string };
+      const err = env.error as { code: string; message: string };
       code = err.code;
       message = err.message;
     } else {
@@ -557,12 +550,12 @@ function handleParentMessage(event: MessageEvent): void {
   if (typeof event.data !== 'object' || event.data === null) return;
   const msg = event.data as Record<string, unknown>;
 
-  if (msg['type'] === 'wh:options') {
+  if (msg.type === 'wh:options') {
     // Update display options from the parent snippet.
-    const m = msg['message'];
+    const m = msg.message;
     if (typeof m === 'string') params.message = m;
     // redirectTo from parent overrides URL param if provided.
-    const r = msg['redirectTo'];
+    const r = msg.redirectTo;
     if (typeof r === 'string') params.redirectTo = r;
     // Re-render current state with new options (only affects email-entry UI).
     if (state.phase === 'email-entry' || state.phase === 'error') {

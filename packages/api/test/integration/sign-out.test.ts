@@ -63,7 +63,7 @@ import {
 
 import { runMigrations } from '../../../db/src/migrate';
 import { registerGlobalErrorHandler } from '../../src/errors';
-import { hashToken } from '../../src/lib/crypto';
+import { generateToken, hashToken } from '../../src/lib/crypto';
 import { hashBytes } from '../../src/lib/hashing';
 import { addSeconds, nowUtc } from '../../src/lib/time';
 import { magicRoutes } from '../../src/routes/magic/index';
@@ -149,13 +149,13 @@ async function seedSession(
   opts: { expired?: boolean; revoked?: boolean; expiresInSec?: number } = {},
 ) {
   const db = testDb();
-  const rawToken = `wh_s_${Date.now()}${Math.random().toString(36).slice(2, 42)}`;
+  // Same format as production tokens so the route's format check passes.
+  const rawToken = generateToken('wh_s_');
   const tokenHash = hashToken(rawToken);
 
-  const expiresAt =
-    opts.expired
-      ? addSeconds(nowUtc(), -3600)
-      : addSeconds(nowUtc(), opts.expiresInSec ?? 7200);
+  const expiresAt = opts.expired
+    ? addSeconds(nowUtc(), -3600)
+    : addSeconds(nowUtc(), opts.expiresInSec ?? 7200);
 
   const revokedAt = opts.revoked ? nowUtc() : null;
 
@@ -326,10 +326,7 @@ describe('POST /v1/snippet/sign-out — full lifecycle', () => {
     const db = testDb();
 
     // Confirm not revoked yet (only one session in DB after afterEach cleanup)
-    const [before] = await db
-      .select({ revokedAt: sessions.revokedAt })
-      .from(sessions)
-      .limit(1);
+    const [before] = await db.select({ revokedAt: sessions.revokedAt }).from(sessions).limit(1);
     expect(before?.revokedAt).toBeNull();
 
     await app.inject({
@@ -342,10 +339,7 @@ describe('POST /v1/snippet/sign-out — full lifecycle', () => {
       },
     });
 
-    const [after] = await db
-      .select({ revokedAt: sessions.revokedAt })
-      .from(sessions)
-      .limit(1);
+    const [after] = await db.select({ revokedAt: sessions.revokedAt }).from(sessions).limit(1);
     expect(after?.revokedAt).not.toBeNull();
     expect(after?.revokedAt).toBeInstanceOf(Date);
   });

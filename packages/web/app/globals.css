@@ -30,9 +30,9 @@
   --radius-lg: 0.625rem;
 
   /* ── Font families (resolved from CSS vars set by next/font on <html>) ── */
-  --font-sans: var(--font-dm-sans), 'DM Sans', sans-serif;
-  --font-mono: var(--font-jetbrains-mono), 'JetBrains Mono', monospace;
-  --font-display: var(--font-bebas-neue), 'Bebas Neue', sans-serif;
+  --font-sans: var(--font-dm-sans), "DM Sans", sans-serif;
+  --font-mono: var(--font-jetbrains-mono), "JetBrains Mono", monospace;
+  --font-display: var(--font-bebas-neue), "Bebas Neue", sans-serif;
 }
 
 body {
@@ -42,4 +42,26 @@ body {
   font-weight: 400;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Visible keyboard focus everywhere, including elements without their own ring */
+:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+
+/* Programmatic focus target for the skip link; no ring needed */
+#main-content:focus {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

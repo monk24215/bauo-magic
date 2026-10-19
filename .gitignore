@@ -1,7 +1,7 @@
 *.zip
 *.gz
 *errorlog*
-wiredhowse-magic-link.code-workspace
+*.code-workspace
 PROJECT_BRIEF___wiredhowse-magic-link.md
 /spec
 Claude.md

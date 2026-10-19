@@ -1,5 +1,5 @@
+import { NavLink } from '@/components/nav-link';
 import { ServerApiError, serverApi } from '@/lib/server-api';
-import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { SignOutButton } from './sign-out-button';
@@ -39,8 +39,10 @@ export default async function DashboardLayout({ children }: { children: ReactNod
   return (
     <div className="flex min-h-screen">
       {/* Sidebar — relative + overflow-hidden so the background logo is clipped to it */}
-      <aside className="w-56 border-r border-border bg-muted flex flex-col p-4 gap-1 shrink-0 relative overflow-hidden">
-
+      <aside
+        aria-label="Dashboard"
+        className="w-56 border-r border-border bg-muted flex flex-col p-4 gap-1 shrink-0 relative overflow-hidden"
+      >
         {/* Background watermark logo — large, fixed in place, very low opacity */}
         <div
           className="pointer-events-none select-none"
@@ -55,11 +57,11 @@ export default async function DashboardLayout({ children }: { children: ReactNod
           aria-hidden="true"
         >
           <img
-            src="https://magic-link.wiredhowse.app/logo.png"
+            src="/logo.png"
             alt=""
             style={{
               width: '810px',
-              maxWidth: '810px',
+              maxWidth: 'none',
               opacity: 0.045,
               userSelect: 'none',
             }}
@@ -70,11 +72,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
         <div className="relative z-10 flex flex-col flex-1 gap-1">
           {/* Brand block — logo (2× size) centered above the eyebrow label */}
           <div className="mb-6 flex flex-col items-center text-center">
-            <img
-              src="https://magic-link.wiredhowse.app/logo.png"
-              alt="wiredHowse"
-              className="h-16 w-auto mb-3"
-            />
+            <img src="/logo.png" alt="" className="h-16 w-auto mb-3" />
             {/* Eyebrow label — matches .eyebrow from the design system */}
             <span
               className="font-mono uppercase"
@@ -91,19 +89,9 @@ export default async function DashboardLayout({ children }: { children: ReactNod
             </p>
           </div>
 
-          <nav className="flex flex-col gap-1">
-            <Link
-              href="/sites"
-              className="px-3 py-2 text-sm rounded-md text-muted-foreground hover:bg-[#1d2026] hover:text-foreground transition-colors"
-            >
-              Sites
-            </Link>
-            <Link
-              href="/account"
-              className="px-3 py-2 text-sm rounded-md text-muted-foreground hover:bg-[#1d2026] hover:text-foreground transition-colors"
-            >
-              Account
-            </Link>
+          <nav aria-label="Main" className="flex flex-col gap-1">
+            <NavLink href="/sites">Sites</NavLink>
+            <NavLink href="/account">Account</NavLink>
           </nav>
 
           <div className="mt-auto">

@@ -66,7 +66,7 @@ import {
 
 import { runMigrations } from '../../../db/src/migrate';
 import { registerGlobalErrorHandler } from '../../src/errors';
-import { hashToken } from '../../src/lib/crypto';
+import { generateToken, hashToken } from '../../src/lib/crypto';
 import { hashBytes } from '../../src/lib/hashing';
 import { addSeconds, nowUtc } from '../../src/lib/time';
 import { magicRoutes } from '../../src/routes/magic/index';
@@ -160,13 +160,13 @@ async function seedSession(
   } = {},
 ) {
   const db = testDb();
-  const rawToken = `wh_s_${Date.now()}${Math.random().toString(36).slice(2, 42)}`;
+  // Same format as production tokens so the route's format check passes.
+  const rawToken = generateToken('wh_s_');
   const tokenHash = hashToken(rawToken);
 
-  const expiresAt =
-    opts.expired
-      ? addSeconds(nowUtc(), -3600) // 1 hour in the past
-      : addSeconds(nowUtc(), opts.expiresInSec ?? 7200);
+  const expiresAt = opts.expired
+    ? addSeconds(nowUtc(), -3600) // 1 hour in the past
+    : addSeconds(nowUtc(), opts.expiresInSec ?? 7200);
 
   const revokedAt = opts.revoked ? nowUtc() : null;
 
@@ -352,16 +352,10 @@ describe('POST /v1/snippet/session/check — full chain', () => {
 
     // Verify DB timestamps were refreshed
     const db = testDb();
-    const [sess] = await db
-      .select({ lastUsedAt: sessions.lastUsedAt })
-      .from(sessions)
-      .limit(1);
+    const [sess] = await db.select({ lastUsedAt: sessions.lastUsedAt }).from(sessions).limit(1);
     expect(sess?.lastUsedAt.getTime()).toBeGreaterThanOrEqual(before.getTime() - 1000);
 
-    const [user] = await db
-      .select({ lastSeenAt: endUsers.lastSeenAt })
-      .from(endUsers)
-      .limit(1);
+    const [user] = await db.select({ lastSeenAt: endUsers.lastSeenAt }).from(endUsers).limit(1);
     expect(user?.lastSeenAt?.getTime()).toBeGreaterThanOrEqual(before.getTime() - 1000);
   });
 
@@ -373,10 +367,7 @@ describe('POST /v1/snippet/session/check — full chain', () => {
 
     // Capture the original last_used_at
     const db = testDb();
-    const [original] = await db
-      .select({ lastUsedAt: sessions.lastUsedAt })
-      .from(sessions)
-      .limit(1);
+    const [original] = await db.select({ lastUsedAt: sessions.lastUsedAt }).from(sessions).limit(1);
 
     // Send a tampered token (wrong chars after valid prefix)
     const tamperedToken = `${sess.id}XXXXXX_tampered_garbage_padding`;
@@ -392,10 +383,7 @@ describe('POST /v1/snippet/session/check — full chain', () => {
       body: JSON.stringify({ token: tamperedToken }),
     });
 
-    const [after] = await db
-      .select({ lastUsedAt: sessions.lastUsedAt })
-      .from(sessions)
-      .limit(1);
+    const [after] = await db.select({ lastUsedAt: sessions.lastUsedAt }).from(sessions).limit(1);
     expect(after?.lastUsedAt).toEqual(original?.lastUsedAt);
   });
 });
