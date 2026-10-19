@@ -2,8 +2,8 @@
  * Server-side API client. Passes the wh_owner_session cookie from the current
  * request context. For use in Server Components and Route Handlers only.
  *
- * Uses INTERNAL_API_URL (Railway private network) for server-to-server calls
- * so requests never leave Railway's internal network.  Falls back to
+ * Uses INTERNAL_API_URL (private network) for server-to-server calls
+ * so requests never leave the internal network.  Falls back to
  * http://localhost:3001 for local development.
  */
 import { cookies } from 'next/headers';

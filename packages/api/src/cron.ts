@@ -2,12 +2,12 @@
  * Cron service entry point.
  *
  * Compiled to dist/cron.js by the shared tsconfig.
- * Deployed as a separate Railway service alongside api.
+ * Deployed as a separate service (container) alongside api.
  *
  * What this does:
  *  1. Validates env (DATABASE_URL, optional AUDIT_LOG_RETENTION_DAYS, etc.)
  *  2. Starts the node-cron scheduler (hourly + daily jobs).
- *  3. Exposes GET /healthz on HEALTHZ_PORT (default 3002) so Railway can
+ *  3. Exposes GET /healthz on HEALTHZ_PORT (default 3002) so the host can
  *     monitor the service independently of the API.
  *
  * It does NOT import Redis, Resend, CORS, or any HTTP-facing API logic —
@@ -33,7 +33,7 @@ let schedulerStarted = false;
 
 // ---------------------------------------------------------------------------
 // Health check — simple 200 once the scheduler is running.
-// Railway monitors this endpoint independently of the API's /readyz.
+// The host monitors this endpoint independently of the API's /readyz.
 // ---------------------------------------------------------------------------
 app.get('/healthz', async (_req, reply) => {
   if (!schedulerStarted) {

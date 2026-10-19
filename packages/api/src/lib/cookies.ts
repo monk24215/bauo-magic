@@ -13,7 +13,7 @@ export const SESSION_COOKIE_MAX_AGE = 60 * 60 * 24 * 30;
  * SameSite=Lax allows top-level GET navigations (login redirects, email links)
  * while blocking cross-site non-safe requests. The double-submit CSRF token
  * provides the additional layer for state-changing requests.
- * Secure is set only in production (Railway uses HTTPS; dev uses HTTP).
+ * Secure is set only in production (production is served over HTTPS; dev uses HTTP).
  * Domain is only set when SESSION_COOKIE_DOMAIN is configured in env.
  */
 export function buildOwnerSessionCookie(rawToken: string): string {

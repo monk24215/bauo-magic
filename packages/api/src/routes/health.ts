@@ -12,7 +12,7 @@ export async function healthRoutes(app: FastifyInstance): Promise<void> {
   });
 
   // Readiness checks DB + Redis within a 500ms deadline each.
-  // Railway uses this for rolling deploys — returns 503 until both are reachable.
+  // Used by health checks during rolling deploys — returns 503 until both are reachable.
   app.get('/readyz', async (_req, reply) => {
     const checks: ReadinessResponse['checks'] = {
       postgres: 'error',
