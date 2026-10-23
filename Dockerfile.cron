@@ -48,7 +48,7 @@ COPY --from=builder /app/packages/api/dist ./packages/api/dist
 COPY --from=builder /app/packages/api/package.json ./packages/api/
 COPY --from=builder /app/node_modules ./node_modules
 
-# Cron listens on HEALTHZ_PORT (default 3002) for Railway health checks.
+# Cron listens on HEALTHZ_PORT (default 3002) for health checks.
 EXPOSE 3002
 # Cron does NOT run migrations — only the api service does on startup.
 CMD ["node", "packages/api/dist/cron.js"]

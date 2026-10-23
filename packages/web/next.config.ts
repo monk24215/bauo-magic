@@ -1,7 +1,7 @@
 import type { NextConfig } from 'next';
 
 // Consumed at build time by the Next.js rewrite engine.
-// In Railway: set INTERNAL_API_URL=http://<api-private-domain>:3001 on the web service.
+// In production: set INTERNAL_API_URL=http://<api-internal-host>:3001 on the web service.
 // In local dev: falls back to http://localhost:3001 when the env var is absent.
 const internalApiUrl = process.env.INTERNAL_API_URL ?? 'http://localhost:3001';
 
@@ -16,7 +16,7 @@ const config: NextConfig = {
         source: '/v1/:path*',
         destination: `${internalApiUrl}/v1/:path*`,
       },
-      // Health / readiness probes — Railway and uptime monitors hit these.
+      // Health / readiness probes — the host's health checks and uptime monitors hit these.
       {
         source: '/healthz',
         destination: `${internalApiUrl}/healthz`,

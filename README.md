@@ -8,8 +8,8 @@ Production: **magic-link.wiredhowse.app**
 
 | Package | Description |
 |---|---|
-| `packages/api` | Fastify API (Railway service) |
-| `packages/web` | Next.js 15 dashboard + public pages (Railway service) |
+| `packages/api` | Fastify API |
+| `packages/web` | Next.js 15 dashboard + public pages |
 | `packages/snippet` | Browser snippet, under 15 KB gzipped, served at `/v1/snippet.js` |
 | `packages/db` | Drizzle ORM schema + migrations |
 | `packages/shared` | Shared TypeScript types + Zod schemas |
@@ -39,14 +39,16 @@ See [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for full setup and integration 
 
 ## Deployment
 
-The API, web dashboard, and cron service each run as a Railway service (`Dockerfile.api`, `Dockerfile.web`, `Dockerfile.cron`). The dashboard depends on server-side rewrites and middleware, so it cannot be hosted as a static site such as GitHub Pages. See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+> **Railway is not used.** This project no longer runs on Railway and never will. Older build-log entries mention it as history only; do not plan or deploy for it.
+
+The API, web dashboard, and cron service each ship as a Docker image (`Dockerfile.api`, `Dockerfile.web`, `Dockerfile.cron`) and need Postgres and Redis alongside them. The dashboard depends on server-side rewrites and middleware, so it cannot be hosted as a static site such as GitHub Pages. See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 ## Documentation
 
 | Document | Purpose |
 |---|---|
 | [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) | Local setup, tests, conventions |
-| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Railway services, environment, DNS |
+| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Services, environment, health checks, DNS |
 | [docs/faqs/site-owner-faq.md](docs/faqs/site-owner-faq.md) | FAQ for site owners embedding the snippet |
 | [docs/faqs/end-user-faq.md](docs/faqs/end-user-faq.md) | FAQ for people signing in with a magic link |
 | [docs/build-log/](docs/build-log/README.md) | Chunk-by-chunk record of how the service was built |

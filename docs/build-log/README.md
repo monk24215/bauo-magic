@@ -19,6 +19,8 @@ After each chunk completes in Claude Code:
 2. A build-log file for that chunk gets generated.
 3. File goes into `docs/build-log/` in the repo, committed with the chunk's code.
 
+> **Note:** Railway is no longer used. Entries below that mention Railway are kept as history only. See `docs/DEPLOYMENT.md` for the current deployment notes.
+
 ## Status
 
 | #   | Chunk                                          | Status        | Model         | File                         |
@@ -42,7 +44,7 @@ After each chunk completes in Claude Code:
 | 7c  | End User self-service (`/v1/me/*` + /me page)  | ✅ Complete   | Sonnet 4.6    | `07c_end_user_self_service.md` |
 | 7d  | CSRF protection + auth integration tests       | ✅ Complete   | Sonnet 4.6    | `07d_csrf_auth_tests.md`     |
 | 8   | Cron service (cleanup + archive purge)         | ✅ Complete   | Sonnet 4.6    | `08_cron_service.md`         |
-| 9   | Railway deploy + DNS + DMARC                   | ⚪ Not started | —            | —                            |
+| 9   | Production deploy + DNS + DMARC (host TBD)     | ⚪ Not started | —            | —                            |
 
 Legend: ✅ Complete · 🟡 In progress · 🔴 Blocked · ⚪ Not started
 
@@ -53,8 +55,8 @@ Legend: ✅ Complete · 🟡 In progress · 🔴 Blocked · ⚪ Not started
 - **Site Owner can sign in** (after chunk 7a): signup, email verification, password login, Google OAuth, password reset all working through the dashboard.
 - **Site Owner full lifecycle** (after chunk 7b): owners can sign up, verify email, log in, create up to 3 sites, verify domain ownership, manage allowed origins, view live metrics, clear sessions, disable, and delete. Dashboard is functionally complete for the Site Owner role.
 - **End User self-service complete** (after chunk 7c): End Users can view their profile, manage active sessions across all sites, revoke individually or all at once, export their data (GDPR), and trigger atomic close-and-archive. The `/v1/identity/me` SSO contract is live for future wiredHowse apps to consume.
-- **Chunk 7 closed** (after chunk 7d): every state-changing endpoint is CSRF-protected with double-submit cookies and timing-safe comparison. Auth flows have full integration test coverage. The build is functionally complete; only operational chunks (cron + Railway deploy) remain.
-- **Operational infrastructure complete** (after chunk 8): cron service ships 8 cleanup/purge jobs, scheduled via node-cron, with unit + integration tests. Only Railway deploy + DNS (chunk 9) remains before production launch.
+- **Chunk 7 closed** (after chunk 7d): every state-changing endpoint is CSRF-protected with double-submit cookies and timing-safe comparison. Auth flows have full integration test coverage. The build is functionally complete; only operational chunks (cron + production deploy) remain.
+- **Operational infrastructure complete** (after chunk 8): cron service ships 8 cleanup/purge jobs, scheduled via node-cron, with unit + integration tests. Only production deploy + DNS (chunk 9) remains before production launch.
 
 ## Open follow-ups across chunks
 

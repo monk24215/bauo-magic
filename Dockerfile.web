@@ -20,7 +20,7 @@ COPY packages/web ./packages/web
 RUN pnpm --filter @wiredhowse/shared build
 
 # INTERNAL_API_URL is consumed at build time by next.config.ts rewrites.
-# Declare it as an ARG so Railway's --build-arg injection is visible to Node
+# Declare it as an ARG so --build-arg injection is visible to Node
 # during `next build`.  Falls back to localhost for local dev (no build arg).
 ARG INTERNAL_API_URL=http://localhost:3001
 ENV NEXT_TELEMETRY_DISABLED=1

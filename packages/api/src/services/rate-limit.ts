@@ -89,7 +89,7 @@ function sha256Hex(value: string): string {
 }
 
 /** For IPv6, key on the /64 prefix to limit evasion via address rotation.
- *  Assumes Railway proxy sends fully-expanded IPv6 (no :: abbreviation). */
+ *  Assumes the reverse proxy sends fully-expanded IPv6 (no :: abbreviation). */
 function normalizeIp(ip: string): string {
   if (!ip.includes(':')) return ip;
   return ip.split(':').slice(0, 4).join(':');

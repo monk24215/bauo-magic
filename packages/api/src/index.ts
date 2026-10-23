@@ -25,7 +25,7 @@ const server = Fastify({
       transport: { target: 'pino-pretty', options: { colorize: true } },
     }),
   },
-  // Trust Railway's load balancer for real client IP in request.ip
+  // Trust the reverse proxy / load balancer for real client IP in request.ip
   trustProxy: true,
   genReqId: () => `req_${randomBytes(9).toString('base64url')}`,
 });
@@ -42,7 +42,7 @@ void server.register(fastifyHelmet, { contentSecurityPolicy: false });
 registerGlobalErrorHandler(server);
 registerRequestLogging(server);
 
-// Health / readiness at top-level paths (no /v1 prefix — Railway uses /readyz)
+// Health / readiness at top-level paths (no /v1 prefix — health checks use /readyz)
 void server.register(healthRoutes);
 
 // Magic-link redemption (browser navigation — returns HTML or 302)

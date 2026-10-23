@@ -1,4 +1,4 @@
-# Cron service — runs alongside the API on Railway as a separate service.
+# Cron service — runs alongside the API as a separate service.
 # Same base as Dockerfile but starts dist/cron.js instead of dist/index.js.
 
 FROM node:20-alpine AS base
